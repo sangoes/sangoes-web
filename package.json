@@ -1,4 +1,7 @@
 {
+  "name": "sangoes-web",
+  "version": "0.1",
+  "description": "react.js umi antd antd-pro",
   "private": true,
   "scripts": {
     "start": "umi dev",
@@ -7,6 +10,23 @@
     "lint": "eslint --ext .js src mock tests",
     "precommit": "lint-staged"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sangoes/sangoes-web.git"
+  },
+  "keywords": [
+    "sangoes",
+    "react.js",
+    "umi",
+    "antd",
+    "pro"
+  ],
+  "author": "jerrychir",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sangoes/sangoes-web/issues"
+  },
+  "homepage": "https://github.com/sangoes/sangoes-web/tree/boot",
   "devDependencies": {
     "babel-eslint": "^9.0.0",
     "eslint": "^5.4.0",
