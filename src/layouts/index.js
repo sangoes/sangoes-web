@@ -1,12 +1,10 @@
 import styles from './index.css';
+import UserLayout from './UserLayout';
 
-function BasicLayout(props) {
-  return (
-    <div className={styles.normal}>
-      <h1 className={styles.title}>Yay! Welcome to umi!</h1>
-      { props.children }
-    </div>
-  );
+export default function BasicLayout(props) {
+  if (props.location.pathname === ('/user/login' || '/user/register')) {
+    return <UserLayout>{props.children}</UserLayout>;
+  }
+
+  return <div>{props.children}</div>;
 }
-
-export default BasicLayout;
