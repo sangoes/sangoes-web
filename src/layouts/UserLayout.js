@@ -27,7 +27,7 @@ const links = [
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+    Copyright <Icon type="copyright" /> 2018 Sangoes Tech
   </Fragment>
 );
 
@@ -59,7 +59,7 @@ class UserLayout extends React.PureComponent {
                 <span className={styles.title}>Ant Design</span>
               </Link>
             </div>
-            <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+            <div className={styles.desc}>Sangoes Web 开源解决方案</div>
           </div>
           {children}
         </div>
