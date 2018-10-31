@@ -1,3 +1,7 @@
+import { routerRedux } from 'dva/router';
+import { stringify } from 'qs';
+import { getSmsCaptcha } from '../services/register';
+
 export default {
   namespace: 'login',
 
@@ -5,9 +9,11 @@ export default {
     status: undefined,
   },
 
-  effects: {},
-
-  reducers: {
-    changeLoginStatus(state, { payload }) {},
+  effects: {
+    *getRegisterCaptcha({ payload }, { call }) {
+      yield call(getSmsCaptcha, payload);
+    },
   },
+
+  reducers: {},
 };

@@ -31,6 +31,13 @@ export default {
     ie: 10,
   },
   history: 'hash',
+  proxy: {
+    '/api': {
+      target: 'http://127.0.0.1:8080/api',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+  },
   alias: {
     utils: path.resolve(__dirname, 'src/utils/'),
     assets: path.resolve(__dirname, 'src/assets/'),

@@ -49,5 +49,8 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "jsencrypt": "^3.0.0-rc.1"
+  }
 }
