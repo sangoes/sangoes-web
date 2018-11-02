@@ -6,7 +6,7 @@ import router from 'umi/router';
 import { Form, Input, Button, Select, Row, Col, Popover, Progress, message } from 'antd';
 import styles from './register.less';
 import jsencrypt from 'jsencrypt';
-import Login from 'components/Login';
+import Login from '@/components/Login';
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 
 const FormItem = Form.Item;
@@ -38,7 +38,7 @@ const passwordProgressMap = {
 };
 
 @connect(({ register, loading }) => ({
-  register,
+  ...register,
   submitting: loading.effects['register/submit'],
 }))
 @Form.create()
@@ -65,8 +65,8 @@ class Register extends Component {
   }
 
   componentDidUpdate() {
-    const { form, register } = this.props;
-    const account = form.getFieldValue('mail');
+    // const { form, register } = this.props;
+    // const account = form.getFieldValue('mail');
     // if (register.status === 'ok') {
     //   router.push({
     //     pathname: '/user/register-result',
@@ -83,13 +83,24 @@ class Register extends Component {
 
   onGetCaptcha = () =>
     new Promise((resolve, reject) => {
-      this.loginForm.validateFields(['mobile'], {}, (err, values) => {
+      this.props.form.validateFields(['mobile'], {}, (err, values) => {
         if (err) {
           reject(err);
         } else {
           const { dispatch } = this.props;
           dispatch({ type: 'register/getRegisterCaptcha', payload: values.mobile })
-            .then(resolve)
+            // .then(resolve)
+            .then(() => {
+              let count = 59;
+              this.setState({ count });
+              this.interval = setInterval(() => {
+                count -= 1;
+                this.setState({ count });
+                if (count === 0) {
+                  clearInterval(this.interval);
+                }
+              }, 1000);
+            })
             .catch(reject);
         }
       });
@@ -107,30 +118,24 @@ class Register extends Component {
     return 'poor';
   };
 
-  handleSubmit = (err, values) => {
-    const { type } = this.state;
-    if (!err) {
-      const { dispatch } = this.props;
-      dispatch({ type: 'register/submit', payload: { ...values, type } });
-    }
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form, dispatch, publicKey } = this.props;
+    form.validateFields({ force: true }, (err, values) => {
+      if (!err) {
+        //   加密
+        let crypt = new JSEncrypt();
+        crypt.setPublicKey(publicKey);
+        dispatch({
+          type: 'register/submit',
+          payload: {
+            ...values,
+            password: crypt.encrypt(values.password),
+          },
+        });
+      }
+    });
   };
-
-  //   handleSubmit = e => {
-  //     e.preventDefault();
-  //     const { form, dispatch } = this.props;
-  //     form.validateFields({ force: true }, (err, values) => {
-  //       if (!err) {
-  //         const { prefix } = this.state;
-  //         dispatch({
-  //           type: 'register/submit',
-  //           payload: {
-  //             ...values,
-  //             prefix,
-  //           },
-  //         });
-  //       }
-  //     });
-  //   };
 
   handleConfirmBlur = e => {
     const { value } = e.target;
@@ -208,20 +213,129 @@ class Register extends Component {
         <h3>
           <FormattedMessage id="app.register.register" />
         </h3>
-        <Login //   defaultActiveKey={type}
-          onTabChange={this.onTabChange}
-          onSubmit={this.handleSubmit}
-          ref={form => {
-            this.loginForm = form;
-          }}
-        >
-          <Mobile name="mobile" placeholder="输入手机号码" />
-          <Captcha
-            name="captcha"
-            countDown={120}
-            onGetCaptcha={this.onGetCaptcha}
-            placeholder="验证码"
-          />
+        <Form onSubmit={this.handleSubmit}>
+          <FormItem>
+            {getFieldDecorator('username', {
+              rules: [
+                {
+                  pattern: '^[a-zA-Z0-9_-]{4,16}$',
+                  message: '用户名最小6位最大18位英文和数字组合',
+                },
+              ],
+            })(<Input size="large" placeholder="用户名" />)}
+          </FormItem>
+          <FormItem help={help}>
+            <Popover
+              getPopupContainer={node => node.parentNode}
+              content={
+                <div style={{ padding: '4px 0' }}>
+                  {passwordStatusMap[this.getPasswordStatus()]}
+                  {this.renderPasswordProgress()}
+                  <div style={{ marginTop: 10 }}>
+                    <FormattedMessage id="validation.password.strength.msg" />
+                  </div>
+                </div>
+              }
+              overlayStyle={{ width: 240 }}
+              placement="right"
+              visible={visible}
+            >
+              {getFieldDecorator('password', {
+                rules: [
+                  {
+                    validator: this.checkPassword,
+                  },
+                ],
+              })(
+                <Input
+                  size="large"
+                  type="password"
+                  placeholder={formatMessage({ id: 'form.password.placeholder' })}
+                />
+              )}
+            </Popover>
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('confirm', {
+              rules: [
+                {
+                  required: true,
+                  message: formatMessage({ id: 'validation.confirm-password.required' }),
+                },
+                {
+                  validator: this.checkConfirm,
+                },
+              ],
+            })(
+              <Input
+                size="large"
+                type="password"
+                placeholder={formatMessage({ id: 'form.confirm-password.placeholder' })}
+              />
+            )}
+          </FormItem>
+          <FormItem>
+            <InputGroup compact>
+              <Select
+                size="large"
+                value={prefix}
+                onChange={this.changePrefix}
+                style={{ width: '20%' }}
+              >
+                <Option value="86">+86</Option>
+                <Option value="87">+87</Option>
+              </Select>
+              {getFieldDecorator('mobile', {
+                rules: [
+                  {
+                    required: true,
+                    message: formatMessage({ id: 'validation.phone-number.required' }),
+                  },
+                  {
+                    pattern: /^\d{11}$/,
+                    message: formatMessage({ id: 'validation.phone-number.wrong-format' }),
+                  },
+                ],
+              })(
+                <Input
+                  size="large"
+                  style={{ width: '80%' }}
+                  placeholder={formatMessage({ id: 'form.phone-number.placeholder' })}
+                />
+              )}
+            </InputGroup>
+          </FormItem>
+          <FormItem>
+            <Row gutter={8}>
+              <Col span={16}>
+                {getFieldDecorator('captcha', {
+                  rules: [
+                    {
+                      required: true,
+                      message: formatMessage({ id: 'validation.verification-code.required' }),
+                    },
+                  ],
+                })(
+                  <Input
+                    size="large"
+                    placeholder={formatMessage({ id: 'form.verification-code.placeholder' })}
+                  />
+                )}
+              </Col>
+              <Col span={8}>
+                <Button
+                  size="large"
+                  disabled={count}
+                  className={styles.getCaptcha}
+                  onClick={this.onGetCaptcha}
+                >
+                  {count
+                    ? `${count} s`
+                    : formatMessage({ id: 'app.register.get-verification-code' })}
+                </Button>
+              </Col>
+            </Row>
+          </FormItem>
           <FormItem>
             <Button
               size="large"
@@ -232,11 +346,11 @@ class Register extends Component {
             >
               <FormattedMessage id="app.register.register" />
             </Button>
-            <Link className={styles.login} to="/user/login">
+            <Link className={styles.login} to="/User/Login">
               <FormattedMessage id="app.register.sing-in" />
             </Link>
           </FormItem>
-        </Login>
+        </Form>
       </div>
     );
   }

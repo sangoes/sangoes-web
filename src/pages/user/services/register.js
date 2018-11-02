@@ -8,3 +8,11 @@ import request from 'utils/request';
 export async function getRegisterCaptcha(mobile) {
   return request(`/api/captcha/sms/${mobile}`);
 }
+
+/**
+ *
+ * @param {*} params
+ */
+export async function register(params) {
+  return request('/api//user/signup', { method: 'POST', body: params });
+}

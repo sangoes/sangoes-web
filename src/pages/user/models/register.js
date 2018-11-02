@@ -1,23 +1,25 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { getRegisterCaptcha } from '../services/register';
-import { createAction } from '@/utils';
+import { getRegisterCaptcha, register } from '../services/register';
+import { createAction, net } from '@/utils';
 
 export default {
   namespace: 'register',
 
   state: {
     status: undefined,
-    publicKey: null,
+    publicKey: '',
   },
 
   effects: {
     *getRegisterCaptcha({ payload }, { call, put }) {
       const response = yield call(getRegisterCaptcha, payload);
-      console.log(response);
-      response &&
-        response.code == 200 &&
-        (yield put(createAction('updateState')({ publicKey: response.data })));
+      if (net(response)) {
+        yield put(createAction('updateState')({ publicKey: response.data }));
+      }
+    },
+    *submit({ payload }, { call, put }) {
+      const response = yield call(register, payload);
     },
   },
 
