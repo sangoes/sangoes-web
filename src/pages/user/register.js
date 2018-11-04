@@ -37,8 +37,9 @@ const passwordProgressMap = {
   poor: 'exception',
 };
 
-@connect(({ register, loading }) => ({
+@connect(({ register, app, loading }) => ({
   ...register,
+  ...app,
   submitting: loading.effects['register/submit'],
 }))
 @Form.create()
@@ -52,16 +53,16 @@ class Register extends Component {
   };
 
   componentDidMount() {
-    let publickey =
-      'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqtb8oVssq39Zx3kaaXhBsLspckAqM/4faBaPLkh7kqOzFYsQaXquk2ZZFB8BqfhJpI8SbZDhf7ReRDrSJUGMlQm4FzdqulOowYAb2qPDNSQDZ4OkGbTCwRoYJ8rS433ksM/kA/rNTC+Hnut1vraHVdSLSrTqZjGKBpHSLwh4WTwIDAQAB';
-    // publickey = new Buffer(publickey, 'hex');
-    // let eb = crypto.publicEncrypt(publickey, 'aaaa');
-    var encrypt = new JSEncrypt();
-    encrypt.setPublicKey(publickey);
-    var encrypted = encrypt.encrypt('aaa');
-    // var decrypted = encrypt.decrypted();
-    console.log('publickey:' + publickey);
-    console.log(encrypted);
+    // let publickey =
+    //   'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCqtb8oVssq39Zx3kaaXhBsLspckAqM/4faBaPLkh7kqOzFYsQaXquk2ZZFB8BqfhJpI8SbZDhf7ReRDrSJUGMlQm4FzdqulOowYAb2qPDNSQDZ4OkGbTCwRoYJ8rS433ksM/kA/rNTC+Hnut1vraHVdSLSrTqZjGKBpHSLwh4WTwIDAQAB';
+    // // publickey = new Buffer(publickey, 'hex');
+    // // let eb = crypto.publicEncrypt(publickey, 'aaaa');
+    // var encrypt = new JSEncrypt();
+    // encrypt.setPublicKey(publickey);
+    // var encrypted = encrypt.encrypt('aaa');
+    // // var decrypted = encrypt.decrypted();
+    // console.log('publickey:' + publickey);
+    // console.log(encrypted);
   }
 
   componentDidUpdate() {
@@ -88,10 +89,9 @@ class Register extends Component {
           reject(err);
         } else {
           const { dispatch } = this.props;
-          dispatch({ type: 'register/getRegisterCaptcha', payload: values.mobile })
+          dispatch({ type: 'app/getRegisterCaptcha', payload: values.mobile })
             // .then(resolve)
             .then(e => {
-              console.log(e);
               let count = 59;
               this.setState({ count });
               this.interval = setInterval(() => {
@@ -132,6 +132,9 @@ class Register extends Component {
           payload: {
             ...values,
             password: crypt.encrypt(values.password),
+            confirm: 'xxxxxxxxx',
+            // PC端登录
+            signupType: '101',
           },
         });
       }
@@ -347,7 +350,7 @@ class Register extends Component {
             >
               <FormattedMessage id="app.register.register" />
             </Button>
-            <Link className={styles.login} to="/User/Login">
+            <Link className={styles.login} to="/user/login">
               <FormattedMessage id="app.register.sing-in" />
             </Link>
           </FormItem>

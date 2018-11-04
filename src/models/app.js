@@ -1,11 +1,11 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { getRegisterCaptcha, register } from '../services/register';
+import { getRegisterCaptcha } from '../services/app';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
 
 export default {
-  namespace: 'register',
+  namespace: 'app',
 
   state: {
     status: undefined,
@@ -13,15 +13,10 @@ export default {
   },
 
   effects: {
-    *submit({ payload }, { call, put }) {
-      const response = yield call(register, payload);
+    *getRegisterCaptcha({ payload }, { call, put }) {
+      const response = yield call(getRegisterCaptcha, payload);
       if (net(response)) {
-        message.success(response.msg);
-        yield put(
-          routerRedux.push({
-            pathname: '/user/login',
-          })
-        );
+        yield put(createAction('updateState')({ publicKey: response.data }));
       }
     },
   },
