@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import { notification } from 'antd';
+import { message } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
 // import { isAntdPro } from './utils';
@@ -23,14 +23,11 @@ const codeMessage = {
 };
 
 const checkStatus = response => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.code >= 200 && response.code < 300) {
     return response;
   }
-  const errortext = codeMessage[response.status] || response.statusText;
-  notification.error({
-    message: `请求错误 ${response.status}: ${response.url}`,
-    description: errortext,
-  });
+  const errortext = response.msg || codeMessage[response.code];
+  message.error(errortext);
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
@@ -120,7 +117,6 @@ export default function request(url, option) {
   //   }
   return (
     fetch(url, newOptions)
-      .then(checkStatus)
       // .then(response => cachedSave(response, hashcode))
       .then(response => {
         // DELETE and 204 do not return data by default
@@ -130,14 +126,13 @@ export default function request(url, option) {
         // }
         return response.json();
       })
+      .then(checkStatus)
       .catch(e => {
         const status = e.name;
         if (status === 401) {
           // @HACK
           /* eslint-disable no-underscore-dangle */
-          window.g_app._store.dispatch({
-            type: 'login/logout',
-          });
+          window.g_app._store.dispatch({ type: 'login/logout' });
           return;
         }
         // environment should not be used

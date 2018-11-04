@@ -90,7 +90,8 @@ class Register extends Component {
           const { dispatch } = this.props;
           dispatch({ type: 'register/getRegisterCaptcha', payload: values.mobile })
             // .then(resolve)
-            .then(() => {
+            .then(e => {
+              console.log(e);
               let count = 59;
               this.setState({ count });
               this.interval = setInterval(() => {

@@ -14,5 +14,8 @@ export async function getRegisterCaptcha(mobile) {
  * @param {*} params
  */
 export async function register(params) {
-  return request('/api//user/signup', { method: 'POST', body: params });
+  return request('/api/user/signup', {
+    method: 'POST',
+    body: params,
+  });
 }
