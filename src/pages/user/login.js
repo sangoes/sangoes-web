@@ -29,10 +29,7 @@ class LoginPage extends Component {
           reject(err);
         } else {
           const { dispatch } = this.props;
-          dispatch({
-            type: 'login/getCaptcha',
-            payload: values.mobile,
-          })
+          dispatch({ type: 'app/getRegisterCaptcha', payload: values.mobile })
             .then(resolve)
             .catch(reject);
         }
@@ -47,6 +44,7 @@ class LoginPage extends Component {
         type: 'login/login',
         payload: {
           ...values,
+          signinType: '201',
           type,
         },
       });
@@ -95,8 +93,13 @@ class LoginPage extends Component {
               this.renderMessage(
                 formatMessage({ id: 'app.login.message-invalid-verification-code' })
               )}
-            <Mobile name="mobile" />
-            <Captcha name="captcha" countDown={120} onGetCaptcha={this.onGetCaptcha} />
+            <Mobile name="mobile" placeholder="输入手机号码" />
+            <Captcha
+              name="captcha"
+              placeholder="验证码"
+              countDown={120}
+              onGetCaptcha={this.onGetCaptcha}
+            />
           </Tab>
           <div>
             <Checkbox checked={autoLogin} onChange={this.changeAutoLogin}>
