@@ -5,21 +5,29 @@ import Link from 'umi/link';
 import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
+import JSEncrypt from 'jsencrypt';
+import { createAction } from '@/utils';
 
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
+const { Tab, UserName, Password, Mobile, Captcha, Submit, CaptchaImage } = Login;
 
-@connect(({ login, loading }) => ({
+@connect(({ login, app, loading }) => ({
   login,
+  ...app,
   submitting: loading.effects['login/login'],
 }))
 class LoginPage extends Component {
   state = {
     type: 'account',
     autoLogin: true,
+    imgUrl: '',
+    publicRandom: '',
+    captchaRandom: '',
   };
 
   onTabChange = type => {
     this.setState({ type });
+    //切换
+    type === 'account' && this._handleRandomPublicKey();
   };
 
   onGetCaptcha = () =>
@@ -35,19 +43,36 @@ class LoginPage extends Component {
         }
       });
     });
-
+  // 登录
   handleSubmit = (err, values) => {
-    const { type } = this.state;
+    const { type, publicRandom, captchaRandom } = this.state;
+    const { publicKey } = this.props;
     if (!err) {
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'login/login',
-        payload: {
-          ...values,
-          signinType: '201',
-          type,
-        },
-      });
+      // 手机登录
+      if (type === 'mobile') {
+        this.props.dispatch(
+          createAction('login/loginMobile')({
+            ...values,
+            signinType: '201',
+          })
+        );
+      }
+      // 账户登录
+      if (type === 'account') {
+        // 加密
+        let crypt = new JSEncrypt();
+        crypt.setPublicKey(publicKey);
+        console.log(crypt.encrypt(values.password));
+        this.props.dispatch(
+          createAction('login/loginAccount')({
+            ...values,
+            password: crypt.encrypt(values.password),
+            signinType: '201',
+            publicRandom,
+            captchaRandom,
+          })
+        );
+      }
     }
   };
 
@@ -60,7 +85,24 @@ class LoginPage extends Component {
   renderMessage = content => (
     <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
   );
-
+  _handleRandomPublicKey() {
+    //生成随机数
+    const random = Math.random()
+      .toString(36)
+      .substr(2);
+    this.setState({ publicRandom: random });
+    //服务器获取公钥
+    this.props.dispatch(createAction('app/getPublicKeyByRandom')(random));
+  }
+  // 加载完成
+  componentDidMount() {
+    const random = Math.random()
+      .toString(36)
+      .substr(2);
+    this.setState({ imgUrl: `/api/captcha/image/${random}`, captchaRandom: random });
+    //随机数生成公钥
+    this._handleRandomPublicKey();
+  }
   render() {
     const { login, submitting } = this.props;
     const { type, autoLogin } = this.state;
@@ -79,11 +121,26 @@ class LoginPage extends Component {
               login.type === 'account' &&
               !submitting &&
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
-            <UserName name="userName" placeholder="手机号码" />
+            <UserName name="username" placeholder="用户名" />
             <Password
               name="password"
               placeholder="密码"
               onPressEnter={() => this.loginForm.validateFields(this.handleSubmit)}
+            />
+            {/* 验证码 */}
+            <CaptchaImage
+              name="captcha"
+              placeholder="验证码"
+              imgUrl={this.state.imgUrl}
+              onCaptchaPress={() => {
+                const random = Math.random()
+                  .toString(36)
+                  .substr(2);
+                this.setState({
+                  imgUrl: `/api/captcha/image/${random}`,
+                  captchaRandom: random,
+                });
+              }}
             />
           </Tab>
           <Tab key="mobile" tab={formatMessage({ id: 'app.login.tab-login-mobile' })}>

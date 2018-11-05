@@ -8,3 +8,10 @@ import request from '@/utils/request';
 export async function getRegisterCaptcha(mobile) {
   return request(`/api/captcha/sms/${mobile}`);
 }
+/**
+ * 根据随机数获取公钥
+ * @param {随机数} random
+ */
+export async function getPublicKeyByRandom(random) {
+  return request(`/api/encrypt/rsa/${random}`);
+}

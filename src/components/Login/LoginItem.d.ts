@@ -4,6 +4,7 @@ export interface ILoginItemProps {
   rules?: any[];
   style?: React.CSSProperties;
   onGetCaptcha?: () => void;
+  onCaptchaPress?: () => void;
   placeholder?: string;
   buttonText?: React.ReactNode;
 }

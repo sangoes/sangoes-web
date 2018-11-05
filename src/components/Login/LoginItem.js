@@ -86,6 +86,7 @@ class WrapFormItem extends Component {
       buttonText,
       updateActive,
       type,
+      imgUrl,
       ...restProps
     } = this.props;
 
@@ -110,6 +111,20 @@ class WrapFormItem extends Component {
               >
                 {count ? `${count} s` : buttonText}
               </Button>
+            </Col>
+          </Row>
+        </FormItem>
+      );
+    } else if (type === 'CaptchaImage') {
+      const inputProps = omit(otherProps, ['onCaptchaPress']);
+      return (
+        <FormItem>
+          <Row gutter={8}>
+            <Col span={16}>
+              {getFieldDecorator(name, options)(<Input {...customprops} {...inputProps} />)}
+            </Col>
+            <Col span={8}>
+              <img src={imgUrl} onClick={this.props.onCaptchaPress} />
             </Col>
           </Row>
         </FormItem>
