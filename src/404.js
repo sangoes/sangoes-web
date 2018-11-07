@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'umi/link';
 import { formatMessage } from 'umi/locale';
-import Exception from '@/components/Exception';
+import { Exception } from 'ant-design-pro';
 
 export default () => (
   <Exception

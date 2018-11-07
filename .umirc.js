@@ -14,6 +14,10 @@ export default {
         routes: {
           exclude: [],
         },
+        dynamicImport: {
+          // 加载
+          loadingComponent: './components/PageLoading/index',
+        },
         dll: {
           exclude: [],
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch', 'antd/es'],
@@ -49,15 +53,4 @@ export default {
   theme: {
     'primary-color': '#1890ff',
   },
-  extraBabelPlugins: [
-    [
-      'import',
-      {
-        libraryName: 'ant-design-pro',
-        libraryDirectory: 'lib',
-        style: true,
-        camel2DashComponentName: false,
-      },
-    ],
-  ],
 };
