@@ -3,10 +3,9 @@ import { FormattedMessage, formatMessage } from 'umi/locale';
 import { Spin, Tag, Menu, Icon, Dropdown, Avatar, Tooltip } from 'antd';
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
-import NoticeIcon from '../NoticeIcon';
-import HeaderSearch from '../HeaderSearch';
-import SelectLang from '../SelectLang';
+// import SelectLang from '../SelectLang';
 import styles from './index.less';
+import { NoticeIcon, HeaderSearch } from 'ant-design-pro';
 
 export default class GlobalHeaderRight extends PureComponent {
   getNoticeData() {
@@ -154,7 +153,8 @@ export default class GlobalHeaderRight extends PureComponent {
         ) : (
           <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
         )}
-        <SelectLang className={styles.action} />
+        {/* 语言选择 */}
+        {/* <SelectLang className={styles.action} /> */}
       </div>
     );
   }

@@ -49,5 +49,15 @@ export default {
   theme: {
     'primary-color': '#1890ff',
   },
-  extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
+  extraBabelPlugins: [
+    [
+      'import',
+      {
+        libraryName: 'ant-design-pro',
+        libraryDirectory: 'lib',
+        style: true,
+        camel2DashComponentName: false,
+      },
+    ],
+  ],
 };

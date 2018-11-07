@@ -2,7 +2,6 @@ import React from 'react';
 import { Layout, Menu, Icon } from 'antd';
 import styles from './BasicLayout.less';
 import GlobalHeader from '@/components/GlobalHeader';
-import SiderMenu from '@/components/SiderMenu';
 import Footer from './Footer';
 import Link from 'umi/link';
 import Context from './MenuContext';
