@@ -8,6 +8,7 @@ export default {
   namespace: 'app',
 
   state: {
+    collapsed: false,
     status: undefined,
     publicKey: '',
   },

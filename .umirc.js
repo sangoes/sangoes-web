@@ -43,5 +43,11 @@ export default {
     assets: path.resolve(__dirname, 'src/assets/'),
     components: path.resolve(__dirname, 'src/components/'),
   },
+  lessLoaderOptions: {
+    javascriptEnabled: true,
+  },
+  theme: {
+    'primary-color': '#1890ff',
+  },
   extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
 };

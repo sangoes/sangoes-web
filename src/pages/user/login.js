@@ -62,7 +62,6 @@ class LoginPage extends Component {
         // 加密
         let crypt = new JSEncrypt();
         crypt.setPublicKey(publicKey);
-        console.log(crypt.encrypt(values.password));
         this.props.dispatch(
           createAction('login/loginAccount')({
             ...values,

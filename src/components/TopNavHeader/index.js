@@ -30,7 +30,7 @@ export default class TopNavHeader extends PureComponent {
             <div className={styles.logo} key="logo" id="logo">
               <Link to="/">
                 <img src={logo} alt="logo" />
-                <h1>Sangoes Web</h1>
+                <h1>Ant Design Pro</h1>
               </Link>
             </div>
             <div
@@ -41,7 +41,7 @@ export default class TopNavHeader extends PureComponent {
               <BaseMenu {...this.props} style={{ border: 'none', height: 64 }} />
             </div>
           </div>
-          <RightContent {...this.props} />
+          {/* <RightContent {...this.props} /> */}
         </div>
       </div>
     );
