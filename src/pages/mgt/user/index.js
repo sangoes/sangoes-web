@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import {
   Row,
@@ -33,6 +33,7 @@ import { connect } from 'dva';
 @Form.create()
 @connect(({ user, loading }) => ({
   ...user,
+  userLoading: loading.models.user,
 }))
 export default class UserMgtPage extends Component {
   constructor(props) {
@@ -45,8 +46,8 @@ export default class UserMgtPage extends Component {
     this._getUserPageNet();
   }
   // 网络获取分页用户
-  _getUserPageNet() {
-    this.props.dispatch(createAction('user/getUserPage')());
+  _getUserPageNet(params) {
+    this.props.dispatch(createAction('user/getUserPage')(params));
   }
   /**
    * 新建用户点击确定
@@ -62,6 +63,44 @@ export default class UserMgtPage extends Component {
       })
     );
   };
+  // 选择
+  _handleSelectRows = rows => {
+    this.setState({
+      selectedRows: rows,
+    });
+  };
+  // table变化
+  _handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
+
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...formValues,
+      ...filters,
+    };
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
+    }
+    // 网络获取
+    this._getUserPageNet(params);
+  };
+  // 更多下拉
+  moreMenu = (
+    <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
+      <Menu.Item key="edit">修改</Menu.Item>
+      <Menu.Item key="bindUser">绑定角色</Menu.Item>
+      <Menu.Item key="reset">重置密码</Menu.Item>
+    </Menu>
+  );
+  // table列表
   columns = [
     {
       title: '用户名',
@@ -87,10 +126,26 @@ export default class UserMgtPage extends Component {
       sorter: true,
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <Button size="small" type="danger" ghost onClick={() => {}}>
+            删除
+          </Button>
+          <Divider type="vertical" />
+          <Dropdown overlay={this.moreMenu} trigger={['click']}>
+            <Button size="small" onClick={() => {}}>
+              更多 <Icon type="down" />
+            </Button>
+          </Dropdown>
+        </Fragment>
+      ),
+    },
   ];
   render() {
     const { selectedRows } = this.state;
-    const { userList } = this.props;
+    const { userList, userLoading } = this.props;
     return (
       <div>
         <PageHeader title="用户管理" />
@@ -103,9 +158,11 @@ export default class UserMgtPage extends Component {
             </div>
             <StandardTable
               selectedRows={selectedRows}
-              // loading={loading}
-              data={userList} // onChange={this.handleStandardTableChange} // onSelectRow={this.handleSelectRows}
+              loading={userLoading}
+              data={userList}
               columns={this.columns}
+              onSelectRow={this._handleSelectRows}
+              onChange={this._handleStandardTableChange}
             />
           </div>
         </Card>
