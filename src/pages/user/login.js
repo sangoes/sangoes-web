@@ -7,6 +7,7 @@ import Login from '@/components/Login';
 import styles from './Login.less';
 import JSEncrypt from 'jsencrypt';
 import { createAction } from '@/utils';
+import { randomLetterAndNums } from '@/utils/utils';
 
 const { Tab, UserName, Password, Mobile, Captcha, Submit, CaptchaImage } = Login;
 
@@ -86,18 +87,14 @@ class LoginPage extends Component {
   );
   _handleRandomPublicKey() {
     //生成随机数
-    const random = Math.random()
-      .toString(36)
-      .substr(2);
+    const random = randomLetterAndNums();
     this.setState({ publicRandom: random });
     //服务器获取公钥
     this.props.dispatch(createAction('app/getPublicKeyByRandom')(random));
   }
   // 加载完成
   componentDidMount() {
-    const random = Math.random()
-      .toString(36)
-      .substr(2);
+    const random = randomLetterAndNums();
     this.setState({ imgUrl: `/api/captcha/image/${random}`, captchaRandom: random });
     //随机数生成公钥
     this._handleRandomPublicKey();
@@ -132,9 +129,7 @@ class LoginPage extends Component {
               placeholder="验证码"
               imgUrl={this.state.imgUrl}
               onCaptchaPress={() => {
-                const random = Math.random()
-                  .toString(36)
-                  .substr(2);
+                const random = randomLetterAndNums();
                 this.setState({
                   imgUrl: `/api/captcha/image/${random}`,
                   captchaRandom: random,

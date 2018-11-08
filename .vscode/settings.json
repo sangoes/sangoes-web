@@ -10,5 +10,9 @@
     "**/.umi": true,
     "**/.umi-production": true,
     ".vscode": true
-  }
+  },
+  "cSpell.words": [
+    "Dropdown",
+    "Nums"
+  ]
 }
