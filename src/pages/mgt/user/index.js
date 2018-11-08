@@ -151,12 +151,21 @@ export default class UserMgtPage extends Component {
         <PageHeader title="用户管理" />
         <Card bordered={false} className={styles.card}>
           <div className={styles.tableList}>
+            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.NewUserPage.show()}>
                 新建
               </Button>
+              {selectedRows.length > 0 && (
+                <span>
+                  <Button type="danger" ghost>
+                    批量删除
+                  </Button>
+                </span>
+              )}
             </div>
             <StandardTable
+              rowKey="id"
               selectedRows={selectedRows}
               loading={userLoading}
               data={userList}
