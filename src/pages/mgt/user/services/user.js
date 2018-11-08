@@ -11,3 +11,10 @@ export async function addUser(params) {
     body: params,
   });
 }
+/**
+ * 获取用户分页
+ * @param {参数} params
+ */
+export async function getUserPage(params) {
+  return request(`/api/user/page?${stringify(params)}`);
+}

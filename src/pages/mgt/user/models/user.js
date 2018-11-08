@@ -2,12 +2,15 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addUser } from '../services/user';
+import { addUser, getUserPage } from '../services/user';
 
 export default {
   namespace: 'user',
 
-  state: {},
+  state: {
+    userList: {},
+    pagination: {},
+  },
 
   effects: {
     // 添加用户
@@ -17,6 +20,13 @@ export default {
         callback && callback();
         // 添加成功
         message.success(response.msg);
+      }
+    },
+    // 获取用户分页
+    *getUserPage({ payload, callback }, { call, put }) {
+      const response = yield call(getUserPage, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ userList: response.data }));
       }
     },
   },
