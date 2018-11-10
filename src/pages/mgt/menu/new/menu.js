@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Modal, Form, Input, Button, Row, Select } from 'antd';
-import { connect } from 'dva';
 import { createAction } from '@/utils';
 
 const Option = Select.Option;
@@ -8,7 +7,7 @@ const FormItem = Form.Item;
 /**
  * 新建菜单
  */
-
+@Form.create()
 export default class NewMenuPage extends Component {
   constructor(props) {
     super(props);

@@ -1,9 +1,3 @@
-/*
- * @Author: jerrychir @sangoes
- * @Date: 2018-11-09 16:17:27
- * @Last Modified by: jerrychir @sangoes
- * @Last Modified time: 2018-11-10 13:02:32
- */
 import React, { Component } from 'react';
 import { Menu, Icon, Dropdown } from 'antd';
 import styles from './index.less';

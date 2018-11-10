@@ -1,19 +1,14 @@
-/*
- * @Author: jerrychir @sangoes
- * @Date: 2018-11-09 15:53:45
- * @Last Modified by: jerrychir @sangoes
- * @Last Modified time: 2018-11-10 15:20:50
- */
 import React, { Component } from 'react';
 import styles from './index.less';
 import { Layout, Menu, Breadcrumb, Icon, Button, Input, Divider, Form, Dropdown } from 'antd';
 import { PageHeader } from 'ant-design-pro';
-import NewMenuPage from './newMenu';
 import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
 import BaseMenu from '@/components/BaseMenu';
 import _ from 'lodash';
 import { getFileItem } from 'antd/lib/upload/utils';
+import NewMenuPage from './new/menu';
+import NewAuthPage from './new/auth';
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
@@ -21,14 +16,15 @@ const { Header, Content, Footer, Sider } = Layout;
 /**
  *菜单 权限 管理
  */
-@connect(({ menu }) => ({
+@connect(({ menu, auth }) => ({
   ...menu,
+  ...auth,
 }))
 @Form.create()
 export default class MenuMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { selectedRows: [] };
     this.menuId = -1;
   }
   // 加载完成
@@ -47,6 +43,18 @@ export default class MenuMgtPage extends Component {
       })
     );
   };
+  // 新建权限点击确定
+  _handleAddAuth = fields => {
+    const { dispatch, form } = this.props;
+    dispatch(
+      createActions('auth/addAuth')(fields)(() => {
+        // 清空form
+        form.resetFields();
+        // 关闭弹窗
+        this.NewAuthPage.hide();
+      })
+    );
+  };
   // 下拉项点击
   handleMenuClick = e => {
     const { dispatch, menuTree } = this.props;
@@ -55,7 +63,6 @@ export default class MenuMgtPage extends Component {
         // 获取item
         const item = this.getItem(menuTree, this.menuId);
         this.NewMenuPage.show(item);
-        break;
         break;
       case 'edit':
         break;
@@ -102,7 +109,8 @@ export default class MenuMgtPage extends Component {
   }
 
   render() {
-    const { menuTree, menuList } = this.props;
+    const { menuTree, menuList, form } = this.props;
+    const { selectedRows } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={['add']}>
         <Menu.Item key="add">添加菜单</Menu.Item>
@@ -112,7 +120,7 @@ export default class MenuMgtPage extends Component {
     );
     // 获取keys
     const { openKeys, selectedKeys } = this.getKeys(menuTree);
-    this.menuId = selectedKeys;
+    this.menuId = selectedKeys[0];
     return (
       <Layout>
         <PageHeader title="菜单管理" />
@@ -140,15 +148,48 @@ export default class MenuMgtPage extends Component {
                 }}
               />
             </Sider>
-            <Content style={{ padding: '0 20px', minHeight: '100%' }}>Content</Content>
+            <Content style={{ padding: '0 20px', minHeight: '100%' }}>
+              <div className={styles.tableList}>
+                <div className={styles.tableListOperator}>
+                  <Button
+                    icon="plus"
+                    type="primary"
+                    onClick={() => this.NewAuthPage.show(this.menuId)}
+                  >
+                    新建
+                  </Button>
+                  {selectedRows.length > 0 && (
+                    <span>
+                      <Button type="danger" ghost>
+                        批量删除
+                      </Button>
+                    </span>
+                  )}
+                </div>
+                {/* 表格 */}
+                {/* <StandardTable
+                  rowKey="id"
+                  selectedRows={selectedRows}
+                  loading={roleLoading}
+                  data={roleList}
+                  columns={this.columns}
+                  onSelectRow={this._handleSelectRows}
+                  onChange={this._handleStandardTableChange}
+                /> */}
+              </div>
+            </Content>
           </Layout>
         </Content>
         {/* 新建菜单 */}
         <NewMenuPage
-          ref={ref => (this.NewMenuPage = ref)}
-          form={this.props.form}
+          wrappedComponentRef={ref => (this.NewMenuPage = ref)}
           menus={menuList}
           onOkHandle={this._handleAdd}
+        />
+        {/* 新建权限 */}
+        <NewAuthPage
+          wrappedComponentRef={ref => (this.NewAuthPage = ref)}
+          onOkHandle={this._handleAddAuth}
         />
       </Layout>
     );
