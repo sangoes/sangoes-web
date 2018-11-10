@@ -55,6 +55,7 @@
     "crypto-js": "^3.1.9-1",
     "enquire-js": "^0.2.1",
     "jsencrypt": "^3.0.0-rc.1",
+    "lodash": "^4.17.11",
     "lodash-decorators": "^6.0.0",
     "memoize-one": "^4.0.3",
     "react-container-query": "^0.11.0",

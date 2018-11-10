@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Form, Input, Button, Row } from 'antd';
 import styles from '../index.less';
-import { randomLetterAndNums } from '@/utils/utils';
 
 const FormItem = Form.Item;
 /**
@@ -12,7 +11,6 @@ export default class NewRolePage extends Component {
     super(props);
     this.state = {
       modalVisible: false,
-      username: null,
     };
   }
 
@@ -35,7 +33,6 @@ export default class NewRolePage extends Component {
   }
   render() {
     const { form, onOkHandle } = this.props;
-    const { username } = this.state;
     return (
       <Modal
         destroyOnClose
