@@ -11,3 +11,11 @@ export async function addAuth(params) {
     body: params,
   });
 }
+
+/**
+ * 获取权限分页
+ * @param {参数} params
+ */
+export async function getAuthPage(params) {
+  return request(`/api/auth/page?${stringify(params)}`);
+}

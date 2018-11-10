@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addAuth } from '../services/auth';
+import { addAuth, getAuthPage } from '../services/auth';
 
 export default {
   namespace: 'auth',
@@ -19,6 +19,13 @@ export default {
         callback && callback();
         // 添加成功
         message.success(response.msg);
+      }
+    },
+    // 获取权限分页
+    *getAuthPage({ payload, callback }, { call, put }) {
+      const response = yield call(getAuthPage, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ authList: response.data }));
       }
     },
   },

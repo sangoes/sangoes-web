@@ -2,6 +2,28 @@ import moment from 'moment';
 import React from 'react';
 import nzh from 'nzh/cn';
 import { parse, stringify } from 'qs';
+/**
+ * 获取keys
+ * @param {获取keys} menuTree
+ */
+export function getKeys(menuTree) {
+  if (!(menuTree && menuTree.length > 0)) {
+    return { openKeys: [], selectedKeys: [] };
+  }
+  const menuItem = menuTree[0];
+  const openKeys = [];
+  let selectedKeys;
+  function getKeysItem(item) {
+    selectedKeys = item.id;
+    if (item.children && item.children.length > 0) {
+      openKeys.push(item.id);
+      // openKeys = item.id;
+      getKeysItem(item.children[0]);
+    }
+  }
+  getKeysItem(menuItem);
+  return { openKeys: openKeys, selectedKeys: [selectedKeys] };
+}
 
 /**
  * 随机生成字母和数字

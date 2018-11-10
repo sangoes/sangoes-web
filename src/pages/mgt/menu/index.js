@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styles from './index.less';
 import { Layout, Menu, Breadcrumb, Icon, Button, Input, Divider, Form, Dropdown } from 'antd';
 import { PageHeader } from 'ant-design-pro';
@@ -9,6 +9,8 @@ import _ from 'lodash';
 import { getFileItem } from 'antd/lib/upload/utils';
 import NewMenuPage from './new/menu';
 import NewAuthPage from './new/auth';
+import moment from 'moment';
+import StandardTable from '@/components/StandardTable';
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
@@ -16,19 +18,22 @@ const { Header, Content, Footer, Sider } = Layout;
 /**
  *菜单 权限 管理
  */
-@connect(({ menu, auth }) => ({
+@connect(({ menu, auth, loading }) => ({
   ...menu,
   ...auth,
+  authLoading: loading.models.auth,
 }))
 @Form.create()
 export default class MenuMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectedRows: [] };
+    this.state = { selectedRows: [], mm: -1 };
     this.menuId = -1;
   }
   // 加载完成
   componentDidMount() {
+    const { selectedKeys } = this.props;
+    // 获取菜单
     this.props.dispatch(createAction('menu/getMenuTree')());
   }
   // 新建角色点击确定
@@ -88,28 +93,89 @@ export default class MenuMgtPage extends Component {
     getSubItem(menuData, id);
     return arr.length > 0 ? arr[0] : null;
   }
-  // 获取keys
-  getKeys(menuTree) {
-    if (!(menuTree && menuTree.length > 0)) {
-      return { openKeys: [], selectedKeys: [] };
+  // 选择
+  _handleSelectRows = rows => {
+    this.setState({
+      selectedRows: rows,
+    });
+  };
+  // table变化
+  _handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
+
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...formValues,
+      ...filters,
+    };
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
     }
-    const menuItem = menuTree[0];
-    const openKeys = [];
-    let selectedKeys;
-    function getKeysItem(item) {
-      selectedKeys = item.id;
-      if (item.children && item.children.length > 0) {
-        openKeys.push(item.id);
-        // openKeys = item.id;
-        getKeysItem(item.children[0]);
-      }
-    }
-    getKeysItem(menuItem);
-    return { openKeys: openKeys, selectedKeys: [selectedKeys] };
-  }
+    // 网络获取
+    // this._getRolePageNet(params);
+  };
+  // 更多下拉
+  moreMenu = (
+    <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
+      <Menu.Item key="edit">修改</Menu.Item>
+      <Menu.Item key="bindUser">绑定角色</Menu.Item>
+      <Menu.Item key="reset">重置密码</Menu.Item>
+    </Menu>
+  );
+  // table列表
+  columns = [
+    {
+      title: '权限名',
+      dataIndex: 'authName',
+    },
+    {
+      title: '权限编码',
+      dataIndex: 'authCode',
+    },
+    {
+      title: '描述',
+      dataIndex: 'des',
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'crtTime',
+      sorter: true,
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    },
+    {
+      title: '更新时间',
+      dataIndex: 'updTime',
+      sorter: true,
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <Button size="small" type="danger" ghost onClick={() => {}}>
+            删除
+          </Button>
+          <Divider type="vertical" />
+          <Dropdown overlay={this.moreMenu} trigger={['click']}>
+            <Button size="small" onClick={() => {}}>
+              更多 <Icon type="down" />
+            </Button>
+          </Dropdown>
+        </Fragment>
+      ),
+    },
+  ];
 
   render() {
-    const { menuTree, menuList, form } = this.props;
+    const { menuTree, menuList, form, selectedKeys, openKeys, authList, authLoading } = this.props;
     const { selectedRows } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={['add']}>
@@ -118,9 +184,6 @@ export default class MenuMgtPage extends Component {
         <Menu.Item key="delete">删除</Menu.Item>
       </Menu>
     );
-    // 获取keys
-    const { openKeys, selectedKeys } = this.getKeys(menuTree);
-    this.menuId = selectedKeys[0];
     return (
       <Layout>
         <PageHeader title="菜单管理" />
@@ -167,15 +230,15 @@ export default class MenuMgtPage extends Component {
                   )}
                 </div>
                 {/* 表格 */}
-                {/* <StandardTable
+                <StandardTable
                   rowKey="id"
                   selectedRows={selectedRows}
-                  loading={roleLoading}
-                  data={roleList}
+                  loading={authLoading}
+                  data={authList}
                   columns={this.columns}
                   onSelectRow={this._handleSelectRows}
                   onChange={this._handleStandardTableChange}
-                /> */}
+                />
               </div>
             </Content>
           </Layout>

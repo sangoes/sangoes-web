@@ -3,6 +3,7 @@ import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
 import { addMenu, getMenuTree, getMenuList } from '../services/menu';
+import { getKeys } from '@/utils/utils';
 
 export default {
   namespace: 'menu',
@@ -10,6 +11,8 @@ export default {
   state: {
     menuTree: [],
     menuList: [],
+    openKeys: [],
+    selectedKeys: [],
   },
 
   effects: {
@@ -28,9 +31,19 @@ export default {
     *getMenuTree({ payload, callback }, { call, put }) {
       const response = yield call(getMenuTree, payload);
       if (net(response)) {
+        const { openKeys, selectedKeys } = getKeys(response.data);
         // 获取菜单列表
         yield put(createAction('getMenuList')());
-        yield put(createAction('updateState')({ menuTree: response.data }));
+        // 获取菜单对应的权限
+        yield put(createAction('auth/getAuthPage')());
+        // 保存state
+        yield put(
+          createAction('updateState')({
+            menuTree: response.data,
+            openKeys: openKeys,
+            selectedKeys: selectedKeys,
+          })
+        );
       }
     },
     // 获取菜单列表
