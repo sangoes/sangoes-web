@@ -104,6 +104,8 @@ export default function request(url, option) {
     .catch(e => {
       const status = e.name;
       const msg = e.msg;
+      console.log(status);
+
       if (status === 401) {
         // message
         message.warning(msg);
