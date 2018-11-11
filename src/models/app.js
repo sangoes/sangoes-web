@@ -26,6 +26,21 @@ export default {
         yield put(createAction('updateState')({ publicKey: response.data }));
       }
     },
+    // 退出
+    *logout({ payload }, { call, put }) {
+      // 清空session
+      sessionStorage.removeItem('token');
+      // TODO网络清除
+      // 重定向login
+      yield put(
+        routerRedux.push({
+          pathname: '/user/login',
+          search: stringify({
+            redirect: window.location.href,
+          }),
+        })
+      );
+    },
   },
 
   reducers: {

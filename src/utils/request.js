@@ -21,64 +21,60 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
-
-const checkStatus = response => {
+// 非json返回
+const preCheckStatus = response => {
+  // 不拦截
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  }
+  // 拦截非json返回
+  // 格式化text
+  const msg = codeMessage[response.status] || response.msg;
+  // 错误
+  const error = new Error(msg);
+  error.name = response.status;
+  error.msg = msg;
+  error.response = response;
+  throw error;
+};
+// json返回
+const CheckStatus = response => {
+  // 不拦截
   if (response.code >= 200 && response.code < 300) {
     return response;
   }
-  const errortext = response.msg || codeMessage[response.code];
-  message.error(errortext);
-  const error = new Error(errortext);
-  error.name = response.status;
+  // 格式化text
+  const msg = response.msg || codeMessage[response.code];
+  // message
+  message.warning(msg);
+  // 错误
+  const error = new Error(msg);
+  error.name = response.code;
+  error.msg = msg;
   error.response = response;
   throw error;
 };
 
-const cachedSave = (response, hashcode) => {
-  /**
-   * Clone a response data and store it in sessionStorage
-   * Does not support data other than json, Cache only json
-   */
-  const contentType = response.headers.get('Content-Type');
-  if (contentType && contentType.match(/application\/json/i)) {
-    // All data is saved as text
-    response
-      .clone()
-      .text()
-      .then(content => {
-        sessionStorage.setItem(hashcode, content);
-        sessionStorage.setItem(`${hashcode}:timestamp`, Date.now());
-      });
-  }
-  return response;
-};
-
 /**
- * Requests a URL, returning a promise.
+ * 请求主体
  *
- * @param  {string} url       The URL we want to request
- * @param  {object} [option] The options we want to pass to "fetch"
- * @return {object}           An object containing either "data" or "err"
+ * @param  {string} url 请求路径
+ * @param  {object} [option]
+ * @return {object}
  */
 export default function request(url, option) {
   const options = {
-    // expirys: isAntdPro(),
     ...option,
   };
-  /**
-   * Produce fingerprints based on url and parameters
-   * Maybe url has the same parameters
-   */
-  //   const fingerprint = url + (options.body ? JSON.stringify(options.body) : '');
-  //   const hashcode = hash
-  //     .sha256()
-  //     .update(fingerprint)
-  //     .digest('hex');
-
   const defaultOptions = {
     credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
+  // 获取token
+  const token = sessionStorage.getItem('token');
+  if (token) {
+    newOptions.headers = { Authorization: `Bearer ${token}` };
+  }
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -99,54 +95,33 @@ export default function request(url, option) {
       };
     }
   }
-
-  //   const expirys = options.expirys && 60;
-  //   // options.expirys !== false, return the cache,
-  //   if (options.expirys !== false) {
-  //     const cached = sessionStorage.getItem(hashcode);
-  //     const whenCached = sessionStorage.getItem(`${hashcode}:timestamp`);
-  //     if (cached !== null && whenCached !== null) {
-  //       const age = (Date.now() - whenCached) / 1000;
-  //       if (age < expirys) {
-  //         const response = new Response(new Blob([cached]));
-  //         return response.json();
-  //       }
-  //       sessionStorage.removeItem(hashcode);
-  //       sessionStorage.removeItem(`${hashcode}:timestamp`);
-  //     }
-  //   }
-  return (
-    fetch(url, newOptions)
-      // .then(response => cachedSave(response, hashcode))
-      .then(response => {
-        // DELETE and 204 do not return data by default
-        // using .json will report an error.
-        // if (newOptions.method === 'DELETE' || response.status === 204) {
-        //   return response.text();
-        // }
-        return response.json();
-      })
-      .then(checkStatus)
-      .catch(e => {
-        const status = e.name;
-        if (status === 401) {
-          // @HACK
-          /* eslint-disable no-underscore-dangle */
-          window.g_app._store.dispatch({ type: 'login/logout' });
-          return;
-        }
-        // environment should not be used
-        if (status === 403) {
-          router.push('/exception/403');
-          return;
-        }
-        if (status <= 504 && status >= 500) {
-          router.push('/exception/500');
-          return;
-        }
-        if (status >= 404 && status < 422) {
-          router.push('/exception/404');
-        }
-      })
-  );
+  return fetch(url, newOptions)
+    .then(preCheckStatus)
+    .then(response => {
+      return response.json();
+    })
+    .then(CheckStatus)
+    .catch(e => {
+      const status = e.name;
+      const msg = e.msg;
+      if (status === 401) {
+        // message
+        message.warning(msg);
+        // 退出登录
+        window.g_app._store.dispatch({ type: 'app/logout' });
+        return;
+      }
+      // // environment should not be used
+      // if (status === 403) {
+      //   router.push('/exception/403');
+      //   return;
+      // }
+      // if (status <= 504 && status >= 500) {
+      //   router.push('/exception/500');
+      //   return;
+      // }
+      // if (status >= 404 && status < 422) {
+      //   router.push('/exception/404');
+      // }
+    });
 }
