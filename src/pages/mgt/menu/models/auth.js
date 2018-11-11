@@ -17,6 +17,9 @@ export default {
       const response = yield call(addAuth, payload);
       if (net(response)) {
         callback && callback();
+        // 获取权限分页
+        const { menuId } = payload;
+        yield put(createAction('getAuthPage')({ menuId }));
         // 添加成功
         message.success(response.msg);
       }
