@@ -29,8 +29,8 @@ export default class MenuMgtPage extends Component {
     super(props);
     this.state = {
       selectedRows: [],
+      menuId: null,
     };
-    this.menuId = this.props.selectedKeys.length > 0 ? this.props.selectedKeys[0] : -1;
   }
   // 加载完成
   componentDidMount() {
@@ -63,11 +63,12 @@ export default class MenuMgtPage extends Component {
   };
   // 下拉项点击
   handleMenuClick = e => {
-    const { dispatch, menuTree } = this.props;
+    const { dispatch, menuTree, selectedKeys } = this.props;
     switch (e.key) {
       case 'add':
         // 获取item
-        const item = this.getItem(menuTree, this.menuId);
+        const menuId = this.state.menuId || selectedKeys[0];
+        const item = this.getItem(menuTree, menuId);
         this.NewMenuPage.show(item);
         break;
       case 'edit':
@@ -174,9 +175,18 @@ export default class MenuMgtPage extends Component {
       ),
     },
   ];
+  // 菜单选中
   _onMenuSelect = e => {
-    this.menuId = e.key;
+    this.setState({
+      menuId: e.key,
+    });
     this.props.dispatch(createAction('auth/getAuthPage')({ menuId: e.key }));
+  };
+  // 新建权限
+  _onNewAuthClick = () => {
+    const { selectedKeys } = this.props;
+    const menuId = this.state.menuId || selectedKeys[0];
+    this.NewAuthPage.show(menuId);
   };
 
   render() {
@@ -217,11 +227,7 @@ export default class MenuMgtPage extends Component {
             <Content style={{ padding: '0 20px', minHeight: '100%' }}>
               <div className={styles.tableList}>
                 <div className={styles.tableListOperator}>
-                  <Button
-                    icon="plus"
-                    type="primary"
-                    onClick={() => this.NewAuthPage.show(this.menuId)}
-                  >
+                  <Button icon="plus" type="primary" onClick={this._onNewAuthClick}>
                     新建
                   </Button>
                   {selectedRows.length > 0 && (
