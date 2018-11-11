@@ -22,7 +22,7 @@ export function getKeys(menuTree) {
     }
   }
   getKeysItem(menuItem);
-  return { openKeys: openKeys, selectedKeys: [selectedKeys] };
+  return { openKeys: openKeys, selectedKeys: selectedKeys };
 }
 
 /**

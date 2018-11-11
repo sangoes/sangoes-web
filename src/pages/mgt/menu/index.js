@@ -27,12 +27,13 @@ const { Header, Content, Footer, Sider } = Layout;
 export default class MenuMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectedRows: [], mm: -1 };
-    this.menuId = -1;
+    this.state = {
+      selectedRows: [],
+    };
+    this.menuId = this.props.selectedKeys.length > 0 ? this.props.selectedKeys[0] : -1;
   }
   // 加载完成
   componentDidMount() {
-    const { selectedKeys } = this.props;
     // 获取菜单
     this.props.dispatch(createAction('menu/getMenuTree')());
   }
@@ -173,6 +174,10 @@ export default class MenuMgtPage extends Component {
       ),
     },
   ];
+  _onMenuSelect = e => {
+    this.menuId = e.key;
+    this.props.dispatch(createAction('auth/getAuthPage')({ menuId: e.key }));
+  };
 
   render() {
     const { menuTree, menuList, form, selectedKeys, openKeys, authList, authLoading } = this.props;
@@ -206,9 +211,7 @@ export default class MenuMgtPage extends Component {
                 menuData={menuTree}
                 openKeys={openKeys}
                 selectedKeys={selectedKeys}
-                onSelect={e => {
-                  this.menuId = e.key;
-                }}
+                onSelect={this._onMenuSelect}
               />
             </Sider>
             <Content style={{ padding: '0 20px', minHeight: '100%' }}>

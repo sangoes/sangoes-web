@@ -35,13 +35,13 @@ export default {
         // 获取菜单列表
         yield put(createAction('getMenuList')());
         // 获取菜单对应的权限
-        yield put(createAction('auth/getAuthPage')());
+        yield put(createAction('auth/getAuthPage')({ menuId: selectedKeys }));
         // 保存state
         yield put(
           createAction('updateState')({
             menuTree: response.data,
             openKeys: openKeys,
-            selectedKeys: selectedKeys,
+            selectedKeys: [selectedKeys],
           })
         );
       }
