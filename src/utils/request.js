@@ -120,7 +120,7 @@ export default function request(url, option) {
         return;
       }
       // 没有找到
-      if (status >= 404 && status < 422) {
+      if (status === 404) {
         router.push('/exception/404');
       }
     });
