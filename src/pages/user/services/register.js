@@ -6,7 +6,11 @@ import request from 'utils/request';
  * @param {手机号码} mobile
  */
 export async function getRegisterCaptcha(mobile) {
-  return request(`/api/captcha/sms/${mobile}`);
+  return request(`/api/captcha/sms/${mobile}`, {
+    headers: {
+      Authorization: 'Basic c2FuZ29lcy1ib290',
+    },
+  });
 }
 
 /**
@@ -16,6 +20,9 @@ export async function getRegisterCaptcha(mobile) {
 export async function register(params) {
   return request('/api/user/signup', {
     method: 'POST',
+    headers: {
+      Authorization: 'Basic c2FuZ29lcy1ib290',
+    },
     body: params,
   });
 }

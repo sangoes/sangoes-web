@@ -101,7 +101,8 @@ class LoginPage extends Component {
   }
   render() {
     const { login, submitting } = this.props;
-    const { type, autoLogin } = this.state;
+    const { type, autoLogin, imgUrl } = this.state;
+
     return (
       <div className={styles.main}>
         <Login
@@ -127,7 +128,7 @@ class LoginPage extends Component {
             <CaptchaImage
               name="captcha"
               placeholder="验证码"
-              imgUrl={this.state.imgUrl}
+              imgUrl={imgUrl}
               onCaptchaPress={() => {
                 const random = randomLetterAndNums();
                 this.setState({

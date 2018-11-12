@@ -8,10 +8,9 @@ import request from 'utils/request';
 export async function login(params) {
   return request('/api/user/signin/mobile', {
     method: 'POST',
-    // headers: {
-    //   Authorization:
-    //     'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqZXJyeWNoaXIiLCJpYXQiOjE1NDEzOTEwMDMsImV4cCI6MTU0MTM5NDYwM30.qCzogQZa3DpWUiRdsNufs6rbK3wsCeii1PwWZbk5_Ac',
-    // },
+    headers: {
+      Authorization: 'Basic c2FuZ29lcy1ib290',
+    },
     body: params,
   });
 }
@@ -22,6 +21,9 @@ export async function login(params) {
 export async function loginAccount(params) {
   return request('/api/user/signin/account', {
     method: 'POST',
+    headers: {
+      Authorization: 'Basic c2FuZ29lcy1ib290',
+    },
     body: params,
   });
 }
