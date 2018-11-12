@@ -18,3 +18,21 @@ export async function addUser(params) {
 export async function getUserPage(params) {
   return request(`/api/user/page?${stringify(params)}`);
 }
+
+/**
+ * 获取绑定角色
+ * @param {参数} params
+ */
+export async function getBindRole(params) {
+  return request(`/api/user/bind/role/info/${params}`);
+}
+/**
+ * 绑定角色
+ * @param  params
+ */
+export async function bindRole(params) {
+  return request('/api/user/bind/role', {
+    method: 'POST',
+    body: params,
+  });
+}
