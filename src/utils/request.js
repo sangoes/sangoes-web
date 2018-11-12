@@ -104,26 +104,24 @@ export default function request(url, option) {
     .catch(e => {
       const status = e.name;
       const msg = e.msg;
-      console.log(status);
-
       if (status === 401) {
-        // message
-        message.warning(msg);
         // 退出登录
         window.g_app._store.dispatch({ type: 'app/logout' });
         return;
       }
-      // // environment should not be used
-      // if (status === 403) {
-      //   router.push('/exception/403');
-      //   return;
-      // }
-      // if (status <= 504 && status >= 500) {
-      //   router.push('/exception/500');
-      //   return;
-      // }
-      // if (status >= 404 && status < 422) {
-      //   router.push('/exception/404');
-      // }
+      // 禁止访问
+      if (status === 403) {
+        router.push('/exception/403');
+        return;
+      }
+      // 内部错误
+      if (status <= 504 && status >= 500) {
+        router.push('/exception/500');
+        return;
+      }
+      // 没有找到
+      if (status >= 404 && status < 422) {
+        router.push('/exception/404');
+      }
     });
 }
