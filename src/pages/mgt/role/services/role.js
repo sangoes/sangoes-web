@@ -18,3 +18,18 @@ export async function addRole(params) {
 export async function getRolePage(params) {
   return request(`/api/role/page?${stringify(params)}`);
 }
+
+/**
+ * 获取绑定菜单
+ * @param {参数} params
+ */
+export async function getBindMenu(params) {
+  return request(`/api/role/bind/menu/info/${params}`);
+}
+/**
+ * 获取绑定权限
+ * @param {参数} params
+ */
+export async function getBindAuth(params) {
+  return request(`/api/role/bind/auth/info/${params.roleId}/${params.menuId}`);
+}

@@ -26,6 +26,7 @@ import styles from './index.less';
 import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
 import NewRolePage from './new';
+import BindMenuPage from './bind';
 
 /**
  * 角色管理
@@ -38,7 +39,7 @@ import NewRolePage from './new';
 export default class RoleMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectedRows: [] };
+    this.state = { bindMenuVisible: false, selectedRows: [], roleRecord: null };
   }
   // 加载完成
   componentDidMount() {
@@ -91,12 +92,26 @@ export default class RoleMgtPage extends Component {
     // 网络获取
     this._getRolePageNet(params);
   };
+  // 下啦确定
+  _handleMenuClick = e => {
+    switch (e.key) {
+      case 'edit':
+        break;
+      case 'bind':
+        // 绑定角色
+        const role = this.state.roleRecord;
+        this.props.dispatch(createAction('role/getBindMenu')(role.id));
+        this.setState({ bindMenuVisible: true });
+        break;
+      default:
+        break;
+    }
+  };
   // 更多下拉
   moreMenu = (
-    <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
+    <Menu onClick={this._handleMenuClick} selectedKeys={['edit']}>
       <Menu.Item key="edit">修改</Menu.Item>
-      <Menu.Item key="bindUser">绑定角色</Menu.Item>
-      <Menu.Item key="reset">重置密码</Menu.Item>
+      <Menu.Item key="bind">绑定菜单权限</Menu.Item>
     </Menu>
   );
   // table列表
@@ -134,7 +149,12 @@ export default class RoleMgtPage extends Component {
           </Button>
           <Divider type="vertical" />
           <Dropdown overlay={this.moreMenu} trigger={['click']}>
-            <Button size="small" onClick={() => {}}>
+            <Button
+              size="small"
+              onClick={() => {
+                this.setState({ roleRecord: record });
+              }}
+            >
               更多 <Icon type="down" />
             </Button>
           </Dropdown>
@@ -142,9 +162,18 @@ export default class RoleMgtPage extends Component {
       ),
     },
   ];
+  // 菜单选中
+  _onMenuSelect = key => {
+    const role = this.state.roleRecord;
+    this.props.dispatch(createAction('role/getBindAuth')({ roleId: role.id, menuId: key }));
+  };
+  // 关闭绑定菜单权限
+  _onCancelBindMenu = () => {
+    this.setState({ bindMenuVisible: false });
+  };
   render() {
-    const { selectedRows } = this.state;
-    const { roleList, roleLoading } = this.props;
+    const { selectedRows, bindMenuVisible } = this.state;
+    const { roleList, roleLoading, menuKeys, menus, selectedKeys, expandedKeys } = this.props;
     return (
       <div>
         <PageHeader title="角色管理" />
@@ -181,6 +210,14 @@ export default class RoleMgtPage extends Component {
           form={this.props.form}
           onOkHandle={this._handleAdd}
         />
+        {/* 绑定菜单 */}
+        {bindMenuVisible ? (
+          <BindMenuPage
+            visible={bindMenuVisible}
+            onMenuSelect={this._onMenuSelect}
+            onCancel={this._onCancelBindMenu}
+          />
+        ) : null}
       </div>
     );
   }
