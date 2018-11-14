@@ -33,3 +33,14 @@ export async function getBindMenu(params) {
 export async function getBindAuth(params) {
   return request(`/api/role/bind/auth/info/${params.roleId}/${params.menuId}`);
 }
+
+/**
+ * 绑定菜单权限
+ * @param  params
+ */
+export async function bindMenuAuth(params) {
+  return request('/api/role/bind/menu', {
+    method: 'POST',
+    body: params,
+  });
+}

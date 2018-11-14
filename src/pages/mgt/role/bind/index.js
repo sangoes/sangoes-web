@@ -17,12 +17,12 @@ const Search = Input.Search;
 export default class BindMenuPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { modalVisible: false, selectedRows: [], checkedKeys: [], selectedKeys: [] };
+    this.state = { modalVisible: false, selectedRowKeys: [], checkedKeys: [], selectedKeys: [] };
   }
   componentWillReceiveProps(nextProps) {
     this.setState({
       checkedKeys: nextProps.menuKeys,
-      selectedRows: nextProps.authKeys,
+      selectedRowKeys: nextProps.authKeys,
       selectedKeys: nextProps.selectedKeys,
     });
   }
@@ -37,7 +37,9 @@ export default class BindMenuPage extends Component {
   // 确定
   _onOkHandle = () => {
     const { handleAdd } = this.props;
-    handleAdd(this.state.targetKeys);
+    const { checkedKeys, selectedRowKeys, selectedKeys } = this.state;
+    const selectedMenuKeys = selectedKeys[0];
+    handleAdd({ checkedKeys, selectedRowKeys, selectedMenuKeys });
   };
   // 获取数节点
   _getTreeNode(menus) {
@@ -88,12 +90,7 @@ export default class BindMenuPage extends Component {
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
   ];
-  // 选择
-  _handleSelectRows = rows => {
-    this.setState({
-      selectedRows: rows,
-    });
-  };
+
   render() {
     const {
       menus,
@@ -105,7 +102,13 @@ export default class BindMenuPage extends Component {
       authLoading,
       onCancel,
     } = this.props;
-    const { selectedRows, selectedKeys, checkedKeys } = this.state;
+    const { selectedRowKeys, selectedKeys, checkedKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: (selectedRowKeys, selectedRows) => {
+        this.setState({ selectedRowKeys: selectedRowKeys });
+      },
+    };
     return (
       <Modal
         width="70%"
@@ -121,13 +124,13 @@ export default class BindMenuPage extends Component {
             <Card className={styles.menu}>
               <div className={styles.tableList}>
                 {/* 表格 */}
-                <StandardTable
-                  rowKey="id"
-                  selectedRows={selectedRows}
+                <Table
                   loading={authLoading}
-                  data={{ list: auths }}
+                  rowKey={'id'}
+                  rowSelection={rowSelection}
+                  dataSource={auths}
                   columns={this.columns}
-                  onSelectRow={this._handleSelectRows}
+                  pagination={false}
                   onChange={this._handleStandardTableChange}
                 />
               </div>

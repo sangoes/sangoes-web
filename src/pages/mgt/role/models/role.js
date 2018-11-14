@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addRole, getRolePage, getBindMenu, getBindAuth } from '../services/role';
+import { addRole, getRolePage, getBindMenu, getBindAuth, bindMenuAuth } from '../services/role';
 import { getKeys } from '@/utils/utils';
 
 export default {
@@ -64,6 +64,15 @@ export default {
             authKeys: response.data.authKeys,
           })
         );
+      }
+    },
+    // 绑定菜单权限
+    *bindMenuAuth({ payload, callback }, { call, put }) {
+      const response = yield call(bindMenuAuth, payload);
+      if (net(response)) {
+        callback && callback();
+        // 添加成功
+        message.success(response.msg);
       }
     },
   },

@@ -171,6 +171,46 @@ export default class RoleMgtPage extends Component {
   _onCancelBindMenu = () => {
     this.setState({ bindMenuVisible: false });
   };
+  // 添加菜单权限
+  _handleAddMenuAuth = fields => {
+    const { selectedRowKeys, checkedKeys, selectedMenuKeys } = fields;
+    const role = this.state.roleRecord;
+    this.props.dispatch(
+      createActions('role/bindMenuAuth')({
+        roleId: role.id,
+        menuId: selectedMenuKeys,
+        menuIds: checkedKeys.join(','),
+        authIds: selectedRowKeys.join(','),
+      })(() => {
+        // 关闭窗口
+        this._onCancelBindMenu();
+      })
+    );
+  };
+  // table变化
+  _handleStandardTableChange = (pagination, filtersArg, sorter) => {
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
+
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params = {
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+      ...formValues,
+      ...filters,
+    };
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
+    }
+    // 网络获取
+    // this._getRolePageNet(params);
+  };
+  // render
   render() {
     const { selectedRows, bindMenuVisible } = this.state;
     const { roleList, roleLoading, menuKeys, menus, selectedKeys, expandedKeys } = this.props;
@@ -179,7 +219,6 @@ export default class RoleMgtPage extends Component {
         <PageHeader title="角色管理" />
         <Card bordered={false} className={styles.card}>
           <div className={styles.tableList}>
-            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.NewRolePage.show()}>
                 新建
@@ -214,6 +253,7 @@ export default class RoleMgtPage extends Component {
         {bindMenuVisible ? (
           <BindMenuPage
             visible={bindMenuVisible}
+            handleAdd={this._handleAddMenuAuth}
             onMenuSelect={this._onMenuSelect}
             onCancel={this._onCancelBindMenu}
           />
