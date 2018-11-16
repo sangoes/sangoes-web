@@ -8,7 +8,7 @@ import request from 'utils/request';
 export async function getRegisterCaptcha(mobile) {
   return request(`/api/captcha/sms/${mobile}`, {
     headers: {
-      Authorization: 'Basic c2FuZ29lcy1ib290',
+      Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',
     },
   });
 }
@@ -18,10 +18,10 @@ export async function getRegisterCaptcha(mobile) {
  * @param {*} params
  */
 export async function register(params) {
-  return request('/api/user/signup', {
+  return request('/api/admin/user/signup', {
     method: 'POST',
     headers: {
-      Authorization: 'Basic c2FuZ29lcy1ib290',
+      Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',
     },
     body: params,
   });

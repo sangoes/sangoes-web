@@ -2,6 +2,7 @@ import fetch from 'dva/fetch';
 import { message } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
+import { stringify, parse } from 'qs';
 // import { isAntdPro } from './utils';
 
 const codeMessage = {
@@ -27,6 +28,7 @@ const preCheckStatus = response => {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
+  console.log(response);
   // 拦截非json返回
   // 格式化text
   const msg = codeMessage[response.status] || response.msg;
@@ -40,11 +42,12 @@ const preCheckStatus = response => {
 // json返回
 const CheckStatus = response => {
   // 不拦截
-  if (response.code >= 200 && response.code < 300) {
+  if ((response.code >= 200 && response.code < 300) || response.access_token) {
     return response;
   }
+
   // 格式化text
-  const msg = response.msg || codeMessage[response.code];
+  const msg = response.msg || codeMessage[response.code] || response.error_description;
   // message
   message.warning(msg);
   // 错误
@@ -71,9 +74,10 @@ export default function request(url, option) {
   };
   const newOptions = { ...defaultOptions, ...options };
   // 获取token
-  const token = sessionStorage.getItem('token');
+  const token = sessionStorage.getItem('access_token');
   if (token) {
-    newOptions.headers = { Authorization: `Bearer ${token}` };
+    const access_token = parse(token).access_token;
+    newOptions.headers = { Authorization: `Bearer ${access_token}` };
   }
   if (
     newOptions.method === 'POST' ||
@@ -81,6 +85,8 @@ export default function request(url, option) {
     newOptions.method === 'DELETE'
   ) {
     if (!(newOptions.body instanceof FormData)) {
+      console.log('xxxxx');
+
       newOptions.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
@@ -88,6 +94,7 @@ export default function request(url, option) {
       };
       newOptions.body = JSON.stringify(newOptions.body);
     } else {
+      console.log('aaaaaa');
       // newOptions.body is FormData
       newOptions.headers = {
         Accept: 'application/json',
@@ -95,33 +102,43 @@ export default function request(url, option) {
       };
     }
   }
-  return fetch(url, newOptions)
-    .then(preCheckStatus)
-    .then(response => {
-      return response.json();
-    })
-    .then(CheckStatus)
-    .catch(e => {
-      const status = e.name;
-      const msg = e.msg;
-      if (status === 401) {
-        // 退出登录
-        window.g_app._store.dispatch({ type: 'app/logout' });
-        return;
-      }
-      // 禁止访问
-      if (status === 403) {
-        router.push('/exception/403');
-        return;
-      }
-      // 内部错误
-      if (status <= 504 && status >= 500) {
-        router.push('/exception/500');
-        return;
-      }
-      // 没有找到
-      if (status === 404) {
-        router.push('/exception/404');
-      }
-    });
+  return (
+    fetch(url, newOptions)
+      // .then(preCheckStatus)
+      .then(response => {
+        return response.json();
+      })
+      .then(CheckStatus)
+      .catch(e => {
+        const status = e.name;
+
+        const msg = e.msg;
+
+        // 请求失败
+        // if (status === 400) {
+        //   message.warning(msg);
+        //   return;
+        // }
+
+        if (status === 401) {
+          // 退出登录
+          window.g_app._store.dispatch({ type: 'app/logout' });
+          return;
+        }
+        // 禁止访问
+        if (status === 403) {
+          router.push('/exception/403');
+          return;
+        }
+        // 内部错误
+        if (status <= 504 && status >= 500) {
+          router.push('/exception/500');
+          return;
+        }
+        // 没有找到
+        if (status === 404) {
+          router.push('/exception/404');
+        }
+      })
+  );
 }

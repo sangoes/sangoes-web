@@ -37,7 +37,7 @@ export default {
     // 退出
     *logout({ payload }, { call, put }) {
       // 清空session
-      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('access_token');
       // TODO网络清除
       // 重定向login
       yield put(

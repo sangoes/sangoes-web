@@ -6,17 +6,14 @@ import request from '@/utils/request';
  * @param  params
  */
 export async function addUser(params) {
-  return request('/api/user/add', {
-    method: 'POST',
-    body: params,
-  });
+  return request('/api/admin/user/add', { method: 'POST', body: params });
 }
 /**
  * 获取用户分页
  * @param {参数} params
  */
 export async function getUserPage(params) {
-  return request(`/api/user/page?${stringify(params)}`);
+  return request(`/api/admin/user/page?${stringify(params)}`);
 }
 
 /**
@@ -24,15 +21,12 @@ export async function getUserPage(params) {
  * @param {参数} params
  */
 export async function getBindRole(params) {
-  return request(`/api/user/bind/role/info/${params}`);
+  return request(`/api/admin/user/bind/role/info/${params}`);
 }
 /**
  * 绑定角色
  * @param  params
  */
 export async function bindRole(params) {
-  return request('/api/user/bind/role', {
-    method: 'POST',
-    body: params,
-  });
+  return request('/api/admin/user/bind/role', { method: 'POST', body: params });
 }

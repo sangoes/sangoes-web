@@ -6,17 +6,14 @@ import request from '@/utils/request';
  * @param  params
  */
 export async function addRole(params) {
-  return request('/api/role/add', {
-    method: 'POST',
-    body: params,
-  });
+  return request('/api/admin/role/add', { method: 'POST', body: params });
 }
 /**
  * 获取角色分页
  * @param {参数} params
  */
 export async function getRolePage(params) {
-  return request(`/api/role/page?${stringify(params)}`);
+  return request(`/api/admin/role/page?${stringify(params)}`);
 }
 
 /**
@@ -24,14 +21,14 @@ export async function getRolePage(params) {
  * @param {参数} params
  */
 export async function getBindMenu(params) {
-  return request(`/api/role/bind/menu/info/${params}`);
+  return request(`/api/admin/role/bind/menu/info/${params}`);
 }
 /**
  * 获取绑定权限
  * @param {参数} params
  */
 export async function getBindAuth(params) {
-  return request(`/api/role/bind/auth/info/${params.roleId}/${params.menuId}`);
+  return request(`/api/admin/role/bind/auth/info/${params.roleId}/${params.menuId}`);
 }
 
 /**
@@ -39,8 +36,5 @@ export async function getBindAuth(params) {
  * @param  params
  */
 export async function bindMenuAuth(params) {
-  return request('/api/role/bind/menu', {
-    method: 'POST',
-    body: params,
-  });
+  return request('/api/admin/role/bind/menu', { method: 'POST', body: params });
 }

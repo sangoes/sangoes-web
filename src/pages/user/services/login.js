@@ -6,10 +6,10 @@ import request from 'utils/request';
  * @param {*} params
  */
 export async function login(params) {
-  return request('/api/user/signin/mobile', {
+  return request('/api/admin/user/signin/mobile', {
     method: 'POST',
     headers: {
-      Authorization: 'Basic c2FuZ29lcy1ib290',
+      Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',
     },
     body: params,
   });
@@ -19,10 +19,10 @@ export async function login(params) {
  * @param {参数} params
  */
 export async function loginAccount(params) {
-  return request('/api/user/signin/account', {
+  return request('/api/oauth/token', {
     method: 'POST',
     headers: {
-      Authorization: 'Basic c2FuZ29lcy1ib290',
+      Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',
     },
     body: params,
   });

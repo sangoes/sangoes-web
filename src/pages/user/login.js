@@ -55,6 +55,7 @@ class LoginPage extends Component {
           createAction('login/loginMobile')({
             ...values,
             signinType: '201',
+            grant_type: 'password',
           })
         );
       }
@@ -63,15 +64,14 @@ class LoginPage extends Component {
         // 加密
         let crypt = new JSEncrypt();
         crypt.setPublicKey(publicKey);
-        this.props.dispatch(
-          createAction('login/loginAccount')({
-            ...values,
-            password: crypt.encrypt(values.password),
-            signinType: '201',
-            publicRandom,
-            captchaRandom,
-          })
-        );
+        const formData = new FormData();
+        formData.append('username', values.username);
+        formData.append('password', crypt.encrypt(values.password));
+        formData.append('signinType', '201');
+        formData.append('publicRandom', publicRandom);
+        formData.append('captchaRandom', captchaRandom);
+        formData.append('grant_type', 'password');
+        this.props.dispatch(createAction('login/loginAccount')(formData));
       }
     }
   };

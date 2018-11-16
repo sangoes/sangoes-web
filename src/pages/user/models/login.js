@@ -17,11 +17,11 @@ export default {
       const response = yield call(login, payload);
       if (net(response)) {
         //删除旧的token
-        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('access_token');
         //登录成功
         message.success(response.msg);
         //保存 token
-        sessionStorage.setItem('token', response.data);
+        sessionStorage.setItem('access_token', response.data);
         //调整首页
         yield put(
           routerRedux.push({
@@ -32,13 +32,13 @@ export default {
     },
     *loginAccount({ payload }, { call, put }) {
       const response = yield call(loginAccount, payload);
-      if (net(response)) {
+      if (response.access_token) {
         //删除旧的token
-        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('access_token');
         //登录成功
-        message.success(response.msg);
+        message.success('登录成功');
         //保存 token
-        sessionStorage.setItem('token', response.data);
+        sessionStorage.setItem('access_token', stringify(response));
         //调整首页
         yield put(
           routerRedux.push({
