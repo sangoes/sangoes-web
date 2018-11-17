@@ -6,7 +6,7 @@ import request from '@/utils/request';
  * @param  params
  */
 export async function addMenu(params) {
-  return request('/api/menu/add', {
+  return request('/api/admin/menu/add', {
     method: 'POST',
     body: params,
   });
@@ -17,7 +17,7 @@ export async function addMenu(params) {
  * @param {参数} params
  */
 export async function getMenuTree(params) {
-  return request('/api/menu/tree');
+  return request('/api/admin/menu/tree');
 }
 
 /**
@@ -25,5 +25,5 @@ export async function getMenuTree(params) {
  * @param {参数} params
  */
 export async function getMenuList(params) {
-  return request('/api/menu/list');
+  return request('/ap/admin/menu/list');
 }

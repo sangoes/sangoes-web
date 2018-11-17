@@ -10,6 +10,12 @@ export default function IndexLayout(props) {
     return <UserLayout>{props.children}</UserLayout>;
   }
   /**
+   * 异常页面
+   */
+  if (props.location.pathname.startsWith('/exception')) {
+    return <div>{props.children}</div>;
+  }
+  /**
    * 主页
    */
   return <BasicLayout>{props.children}</BasicLayout>;

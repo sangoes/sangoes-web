@@ -143,14 +143,12 @@ export default class MenuMgtPage extends Component {
       dataIndex: 'authCode',
     },
     {
-      title: '描述',
-      dataIndex: 'des',
+      title: '权限地址',
+      dataIndex: 'action',
     },
     {
-      title: '创建时间',
-      dataIndex: 'crtTime',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      title: '描述',
+      dataIndex: 'des',
     },
     {
       title: '更新时间',

@@ -60,6 +60,9 @@ export default class BindMenuPage extends Component {
   };
   // 选中
   _onSelect = (selectedKeys, info) => {
+    if (selectedKeys.length == 0) {
+      return;
+    }
     this.setState({
       selectedKeys: selectedKeys,
     });
