@@ -174,11 +174,11 @@ export default class MenuMgtPage extends Component {
     },
   ];
   // 菜单选中
-  _onMenuSelect = e => {
+  _onMenuSelect = ({ item, key, selectedKeys }) => {
     this.setState({
-      menuId: e.key,
+      menuId: key,
     });
-    this.props.dispatch(createAction('auth/getAuthPage')({ menuId: e.key }));
+    this.props.dispatch(createAction('auth/getAuthPage')({ menuId: key }));
   };
   // 新建权限
   _onNewAuthClick = () => {
@@ -216,6 +216,7 @@ export default class MenuMgtPage extends Component {
               />
               {/* 菜单 */}
               <BaseMenu
+                theme="light"
                 menuData={menuTree}
                 openKeys={openKeys}
                 selectedKeys={selectedKeys}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Menu, Icon, Dropdown } from 'antd';
 import styles from './index.less';
+import Link from 'umi/link';
 
 const { SubMenu } = Menu;
 
@@ -44,30 +45,33 @@ export default class BaseMenu extends Component {
     }
     return (
       <Menu.Item key={item.id}>
-        <span>
-          {item.icon && <Icon type={item.icon} />}
-          <span>{item.name}</span>
-        </span>
+        {/* TODO: 判断url为空或为http */}
+        <Link to={item.url || '/'}>
+          <span>
+            {item.icon && <Icon type={item.icon} />}
+            <span>{item.name}</span>
+          </span>
+        </Link>
       </Menu.Item>
     );
   };
 
   render() {
-    const { menuData, onSelect, openKeys, selectedKeys } = this.props;
-
+    const { menuData, onSelect, openKeys, selectedKeys, theme } = this.props;
     return (
       <div>
-        {selectedKeys.length > 0 && (
-          <Menu
-            mode="inline"
-            defaultSelectedKeys={selectedKeys}
-            defaultOpenKeys={openKeys}
-            style={{ minHeight: '100vh' }}
-            onSelect={onSelect}
-          >
-            {this.getNavMenuItems(menuData)}
-          </Menu>
-        )}
+        {/* {selectedKeys.length > 0 && ( */}
+        <Menu
+          mode="inline"
+          theme={theme || 'dark'}
+          selectedKeys={selectedKeys}
+          openKeys={openKeys}
+          style={{ minHeight: '100vh' }}
+          onSelect={onSelect}
+        >
+          {this.getNavMenuItems(menuData)}
+        </Menu>
+        {/* )} */}
       </div>
     );
   }

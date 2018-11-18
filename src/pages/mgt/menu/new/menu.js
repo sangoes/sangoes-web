@@ -31,7 +31,6 @@ export default class NewMenuPage extends Component {
       if (err) return;
       // 设置parent id
       fieldsValue.parentId = fieldsValue.parentId.key;
-      console.log(fieldsValue);
       // 调用
       onOkHandle(fieldsValue);
     });

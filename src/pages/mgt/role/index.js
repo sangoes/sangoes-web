@@ -172,8 +172,6 @@ export default class RoleMgtPage extends Component {
   _handleAddMenuAuth = fields => {
     const { selectedRowKeys, checkedKeys, selectedMenuKeys } = fields;
     const role = this.state.roleRecord;
-    console.log(selectedMenuKeys);
-
     this.props.dispatch(
       createActions('role/bindMenuAuth')({
         roleId: role.id,

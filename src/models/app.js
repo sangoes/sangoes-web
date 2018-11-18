@@ -1,8 +1,14 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { getRegisterCaptcha, getPublicKeyByRandom, getImageCaptcha } from '../services/app';
+import {
+  getRegisterCaptcha,
+  getPublicKeyByRandom,
+  getImageCaptcha,
+  getUserMenu,
+} from '../services/app';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
+import { getKeys } from '@/utils/utils';
 
 export default {
   namespace: 'app',
@@ -38,7 +44,7 @@ export default {
     *logout({ payload }, { call, put }) {
       // 清空session
       sessionStorage.removeItem('access_token');
-      // TODO网络清除
+      // TODO: 网络清除
       // 重定向login
       yield put(
         routerRedux.push({
@@ -48,6 +54,23 @@ export default {
           }),
         })
       );
+    },
+    // 获取当前用户的菜单树形结果
+    *getUserMenu({ payload, callback }, { call, put }) {
+      const response = yield call(getUserMenu, payload);
+      if (net(response)) {
+        const { openKeys, selectedKeys } = getKeys(response.data);
+        // 保存state
+        yield put(
+          createAction('updateState')({
+            menuTree: response.data,
+            openKeys: openKeys,
+            selectedKeys: [selectedKeys],
+          })
+        );
+        // 成功返回
+        callback && callback();
+      }
     },
   },
 

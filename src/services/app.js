@@ -35,3 +35,11 @@ export async function getImageCaptcha(random) {
     },
   });
 }
+
+/**
+ * 获取当前用户的菜单树形结果
+ * @param {参数} params
+ */
+export async function getUserMenu(params) {
+  return request('/api/admin/menu/user/tree');
+}

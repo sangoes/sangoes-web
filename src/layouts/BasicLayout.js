@@ -5,75 +5,65 @@ import GlobalHeader from '@/components/GlobalHeader';
 import Footer from './Footer';
 import Link from 'umi/link';
 import Context from './MenuContext';
+import { connect } from 'dva';
+import { createActions } from '@/utils';
+import BaseMenu from '@/components/BaseMenu';
 
 const { Header, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
 
+@connect(({ app }) => ({
+  ...app,
+}))
 export default class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
+    this.state = { collapsed: false, openKeys: [], selectedKeys: [] };
   }
-  state = { collapsed: false };
   toggle = () => {
     this.setState({ collapsed: !this.state.collapsed });
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    // 获取侧边栏菜单
+    this.props.dispatch(
+      createActions('app/getUserMenu')()(() => {
+        const { openKeys, selectedKeys } = this.props;
+        this.setState({ openKeys: openKeys, selectedKeys: selectedKeys });
+      })
+    );
+  }
 
   componentDidUpdate(preProps) {}
 
   componentWillUnmount() {}
 
+  // 菜单选中
+  _onMenuSelect = ({ item, key, selectedKeys }) => {
+    console.log(item);
+
+    this.setState({ selectedKeys });
+  };
   render() {
+    const { menuTree } = this.props;
+    const { openKeys, selectedKeys } = this.state;
     return (
       <Layout style={{ minHeight: '100vh' }}>
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
           <div className={styles.logo} id="logo">
             <Link to="/">
+              {/* TODO: logo */}
               {/* <img src={logo} alt="logo" /> */}
               <h1>Sangoes Web</h1>
             </Link>
           </div>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['3']}>
-            <Menu.Item key="1">
-              <Icon type="user" />
-              <span>nav 1</span>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Icon type="video-camera" />
-              <span>nav 2</span>
-            </Menu.Item>
-            <SubMenu
-              key="sub1"
-              title={
-                <span>
-                  <Icon type="user" />
-                  <span>User</span>
-                </span>
-              }
-            >
-              <Menu.Item key="3">Tom</Menu.Item>
-              <Menu.Item key="4">Bill</Menu.Item>
-              <Menu.Item key="5">Alex</Menu.Item>
-            </SubMenu>
-            <Menu.Item key="6">
-              <Icon type="upload" />
-              <span>nav 3</span>
-            </Menu.Item>
-            <SubMenu
-              key="sub2"
-              title={
-                <span>
-                  <Icon type="user" />
-                  <span>User</span>
-                </span>
-              }
-            >
-              <Menu.Item key="31">Tom</Menu.Item>
-              <Menu.Item key="41">Bill</Menu.Item>
-              <Menu.Item key="51">Alex</Menu.Item>
-            </SubMenu>
-          </Menu>
+          {/* 菜单 */}
+          <BaseMenu
+            menuData={menuTree}
+            openKeys={openKeys}
+            selectedKeys={selectedKeys}
+            onSelect={this._onMenuSelect}
+          />
         </Sider>
         <Layout>
           {/* 头部 */}
