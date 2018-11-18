@@ -38,6 +38,8 @@ export default {
         yield put(
           createAction('updateState')({ keys: response.data.keys, roles: response.data.roles })
         );
+        // 返回成功
+        callback && callback();
       }
     },
     // 绑定角色

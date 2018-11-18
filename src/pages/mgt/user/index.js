@@ -39,7 +39,7 @@ import BindRolePage from './bind';
 export default class UserMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectedRows: [], userRecord: null };
+    this.state = { bindRoleVisible: false, selectedRows: [], userRecord: null };
   }
   // 加载完成
   componentDidMount() {
@@ -100,9 +100,9 @@ export default class UserMgtPage extends Component {
         break;
       case 'bind':
         // 绑定角色
-        const user = this.state.userRecord;
-        this.props.dispatch(createAction('user/getBindRole')(user.id));
-        this.BindRolePage.show();
+        this.setState({
+          bindRoleVisible: true,
+        });
         break;
       case 'reset':
         break;
@@ -176,13 +176,17 @@ export default class UserMgtPage extends Component {
         roleIds: fields.join(','),
       })(() => {
         // 关闭弹窗
-        this.BindRolePage.hide();
+        this._onBinRoleCancel();
       })
     );
   };
 
+  // 关闭角色绑定窗口
+  _onBinRoleCancel = () => {
+    this.setState({ bindRoleVisible: false });
+  };
   render() {
-    const { selectedRows } = this.state;
+    const { selectedRows, userRecord, bindRoleVisible } = this.state;
     const { userList, userLoading, roles, keys } = this.props;
     return (
       <div>
@@ -220,12 +224,14 @@ export default class UserMgtPage extends Component {
           onOkHandle={this._handleAdd}
         />
         {/* 绑定角色 */}
-        <BindRolePage
-          targetKeys={keys}
-          dataSource={roles}
-          ref={ref => (this.BindRolePage = ref)}
-          handleAdd={this._handleBindRole}
-        />
+        {bindRoleVisible && (
+          <BindRolePage
+            visible={bindRoleVisible}
+            record={userRecord}
+            handleAdd={this._handleBindRole}
+            onCancel={this._onBinRoleCancel}
+          />
+        )}
       </div>
     );
   }

@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import { Modal, Transfer, Row, Col } from 'antd';
 import styles from '../index.less';
+import { createActions } from '@/utils';
+import { connect } from 'dva';
 
 /**
  * 绑定角色
  */
+@connect(({ user }) => ({
+  ...user,
+}))
 export default class BindRolePage extends Component {
   constructor(props) {
     super(props);
@@ -14,22 +19,17 @@ export default class BindRolePage extends Component {
       dataSource: [],
     };
   }
-  componentDidMount() {}
+  componentDidMount() {
+    const user = this.props.record;
+    this.props.dispatch(
+      createActions('user/getBindRole')(user.id)(() => {
+        const { keys, roles } = this.props;
+        this.setState({ targetKeys: keys, dataSource: roles });
+      })
+    );
+  }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      targetKeys: this.props.targetKeys,
-      dataSource: this.props.dataSource,
-    });
-  }
-  // 显示
-  show() {
-    this.setState({ modalVisible: true });
-  }
-  // 隐藏
-  hide() {
-    this.setState({ modalVisible: false });
-  }
+  componentWillReceiveProps(nextProps) {}
   //   过滤选项
   filterOption = (inputValue, option) => {
     return option.description.indexOf(inputValue) > -1;
@@ -46,12 +46,13 @@ export default class BindRolePage extends Component {
 
   render() {
     const { targetKeys, dataSource } = this.state;
+    const { visible, onCancel } = this.props;
     return (
       <Modal
         destroyOnClose
         title="绑定角色"
-        visible={this.state.modalVisible}
-        onCancel={() => this.hide()}
+        visible={visible}
+        onCancel={onCancel}
         onOk={this._onOkHandle}
       >
         <Row type="flex" justify="center">
