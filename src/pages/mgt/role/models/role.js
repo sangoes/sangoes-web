@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { createAction, net } from '@/utils';
+import { createAction, net, createActions } from '@/utils';
 import { message } from 'antd';
 import { addRole, getRolePage, getBindMenu, getBindAuth, bindMenuAuth } from '../services/role';
 import { getKeys } from '@/utils/utils';
@@ -42,7 +42,9 @@ export default {
         // 获取
         const { openKeys, selectedKeys } = getKeys(response.data.menus);
         // 获取权限
-        yield put(createAction('getBindAuth')({ roleId: payload, menuId: selectedKeys }));
+        yield put(
+          createActions('getBindAuth')({ roleId: payload, menuId: selectedKeys })(callback)
+        );
         // 更新props
         yield put(
           createAction('updateState')({
@@ -64,6 +66,8 @@ export default {
             authKeys: response.data.authKeys,
           })
         );
+        // 成功返回
+        callback && callback();
       }
     },
     // 绑定菜单权限

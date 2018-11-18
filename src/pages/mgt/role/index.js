@@ -98,9 +98,6 @@ export default class RoleMgtPage extends Component {
       case 'edit':
         break;
       case 'bind':
-        // 绑定角色
-        const role = this.state.roleRecord;
-        this.props.dispatch(createAction('role/getBindMenu')(role.id));
         this.setState({ bindMenuVisible: true });
         break;
       default:
@@ -175,6 +172,8 @@ export default class RoleMgtPage extends Component {
   _handleAddMenuAuth = fields => {
     const { selectedRowKeys, checkedKeys, selectedMenuKeys } = fields;
     const role = this.state.roleRecord;
+    console.log(selectedMenuKeys);
+
     this.props.dispatch(
       createActions('role/bindMenuAuth')({
         roleId: role.id,
@@ -253,6 +252,7 @@ export default class RoleMgtPage extends Component {
         {bindMenuVisible ? (
           <BindMenuPage
             visible={bindMenuVisible}
+            record={this.state.roleRecord}
             handleAdd={this._handleAddMenuAuth}
             onMenuSelect={this._onMenuSelect}
             onCancel={this._onCancelBindMenu}

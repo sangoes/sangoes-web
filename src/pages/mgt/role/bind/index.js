@@ -4,6 +4,7 @@ import styles from '../index.less';
 import { connect } from 'dva';
 import moment from 'moment';
 import StandardTable from '@/components/StandardTable';
+import { createAction, createActions } from '@/utils';
 
 const TreeNode = Tree.TreeNode;
 const Search = Input.Search;
@@ -17,14 +18,26 @@ const Search = Input.Search;
 export default class BindMenuPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { modalVisible: false, selectedRowKeys: [], checkedKeys: [], selectedKeys: [] };
+    this.state = {
+      modalVisible: false,
+      selectedRowKeys: [],
+      checkedKeys: [],
+      selectedKeys: [],
+    };
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      checkedKeys: nextProps.menuKeys,
-      selectedRowKeys: nextProps.authKeys,
-      selectedKeys: nextProps.selectedKeys,
-    });
+
+  componentDidMount() {
+    const { record } = this.props;
+    this.props.dispatch(
+      createActions('role/getBindMenu')(record.id)(() => {
+        const { menuKeys, authKeys, selectedKeys } = this.props;
+        this.setState({
+          checkedKeys: menuKeys,
+          selectedRowKeys: authKeys,
+          selectedKeys: selectedKeys,
+        });
+      })
+    );
   }
   // 显示
   show() {
@@ -63,10 +76,20 @@ export default class BindMenuPage extends Component {
     if (selectedKeys.length == 0) {
       return;
     }
-    this.setState({
-      selectedKeys: selectedKeys,
-    });
-    this.props.onMenuSelect(selectedKeys[0]);
+    this.setState({ selectedKeys, selectedRowKeys: [] });
+    // 根据角色和菜单查询权限
+    const { record } = this.props;
+    this.props.dispatch(
+      createActions('role/getBindAuth')({
+        roleId: record.id,
+        menuId: selectedKeys[0],
+      })(() => {
+        const { authKeys, selectedKeys } = this.props;
+        this.setState({
+          selectedRowKeys: authKeys,
+        });
+      })
+    );
   };
   // table列表
   columns = [
@@ -95,21 +118,12 @@ export default class BindMenuPage extends Component {
   ];
 
   render() {
-    const {
-      menus,
-      menuKeys,
-      expandedKeys,
-      visible,
-      auths,
-      authKeys,
-      authLoading,
-      onCancel,
-    } = this.props;
+    const { menus, expandedKeys, visible, auths, roleLoading, onCancel } = this.props;
     const { selectedRowKeys, selectedKeys, checkedKeys } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: (selectedRowKeys, selectedRows) => {
-        this.setState({ selectedRowKeys: selectedRowKeys });
+        this.setState({ selectedRowKeys });
       },
     };
     return (
@@ -128,7 +142,7 @@ export default class BindMenuPage extends Component {
               <div className={styles.tableList}>
                 {/* 表格 */}
                 <Table
-                  loading={authLoading}
+                  loading={roleLoading}
                   rowKey={'id'}
                   rowSelection={rowSelection}
                   dataSource={auths}
@@ -142,18 +156,16 @@ export default class BindMenuPage extends Component {
           {/* 菜单 */}
           <Col span={6} pull={18}>
             <Card className={styles.menu}>
-              {selectedKeys.length > 0 && (
-                <Tree
-                  checkable
-                  defaultExpandedKeys={expandedKeys}
-                  defaultCheckedKeys={checkedKeys}
-                  defaultSelectedKeys={selectedKeys}
-                  onSelect={this._onSelect}
-                  onCheck={this._onCheck}
-                >
-                  {this._getTreeNode(menus)}
-                </Tree>
-              )}
+              <Tree
+                checkable
+                expandedKeys={expandedKeys}
+                checkedKeys={checkedKeys}
+                selectedKeys={selectedKeys}
+                onSelect={this._onSelect}
+                onCheck={this._onCheck}
+              >
+                {this._getTreeNode(menus)}
+              </Tree>
             </Card>
           </Col>
         </Row>
