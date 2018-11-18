@@ -44,6 +44,8 @@ export default {
             selectedKeys: [selectedKeys],
           })
         );
+        // 成功返回
+        callback && callback();
       }
     },
     // 获取菜单列表

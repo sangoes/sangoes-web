@@ -59,6 +59,7 @@ export default class BasicLayout extends React.PureComponent {
           </div>
           {/* 菜单 */}
           <BaseMenu
+            link={true}
             menuData={menuTree}
             openKeys={openKeys}
             selectedKeys={selectedKeys}

@@ -30,12 +30,22 @@ export default class MenuMgtPage extends Component {
     this.state = {
       selectedRows: [],
       menuId: null,
+      selectedKeys: [],
+      openKeys: [],
     };
   }
   // 加载完成
   componentDidMount() {
     // 获取菜单
-    this.props.dispatch(createAction('menu/getMenuTree')());
+    this.props.dispatch(
+      createActions('menu/getMenuTree')()(() => {
+        const { selectedKeys, openKeys } = this.props;
+        this.setState({
+          selectedKeys,
+          openKeys,
+        });
+      })
+    );
   }
   // 新建角色点击确定
   _handleAdd = fields => {
@@ -175,9 +185,7 @@ export default class MenuMgtPage extends Component {
   ];
   // 菜单选中
   _onMenuSelect = ({ item, key, selectedKeys }) => {
-    this.setState({
-      menuId: key,
-    });
+    this.setState({ menuId: key, selectedKeys });
     this.props.dispatch(createAction('auth/getAuthPage')({ menuId: key }));
   };
   // 新建权限
@@ -188,8 +196,8 @@ export default class MenuMgtPage extends Component {
   };
 
   render() {
-    const { menuTree, menuList, form, selectedKeys, openKeys, authList, authLoading } = this.props;
-    const { selectedRows } = this.state;
+    const { menuTree, menuList, form, authList, authLoading } = this.props;
+    const { selectedRows, selectedKeys, openKeys } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={['add']}>
         <Menu.Item key="add">添加菜单</Menu.Item>
@@ -217,6 +225,7 @@ export default class MenuMgtPage extends Component {
               {/* 菜单 */}
               <BaseMenu
                 theme="light"
+                link={false}
                 menuData={menuTree}
                 openKeys={openKeys}
                 selectedKeys={selectedKeys}

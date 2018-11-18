@@ -27,6 +27,7 @@ export default class BaseMenu extends Component {
   };
   // 生成子菜单
   getSubMenuOrItem = item => {
+    const { link } = this.props;
     if (item.children && item.children.length > 0 && item.children.some(child => child.name)) {
       const { name, icon, id, children } = item;
       return (
@@ -46,12 +47,19 @@ export default class BaseMenu extends Component {
     return (
       <Menu.Item key={item.id}>
         {/* TODO: 判断url为空或为http */}
-        <Link to={item.url || '/'}>
+        {link ? (
+          <Link to={item.url || '/'}>
+            <span>
+              {item.icon && <Icon type={item.icon} />}
+              <span>{item.name}</span>
+            </span>
+          </Link>
+        ) : (
           <span>
             {item.icon && <Icon type={item.icon} />}
             <span>{item.name}</span>
           </span>
-        </Link>
+        )}
       </Menu.Item>
     );
   };
@@ -60,7 +68,6 @@ export default class BaseMenu extends Component {
     const { menuData, onSelect, openKeys, selectedKeys, theme } = this.props;
     return (
       <div>
-        {/* {selectedKeys.length > 0 && ( */}
         <Menu
           mode="inline"
           theme={theme || 'dark'}
@@ -71,7 +78,6 @@ export default class BaseMenu extends Component {
         >
           {this.getNavMenuItems(menuData)}
         </Menu>
-        {/* )} */}
       </div>
     );
   }
