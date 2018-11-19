@@ -6,7 +6,7 @@ import Footer from './Footer';
 import Link from 'umi/link';
 import Context from './MenuContext';
 import { connect } from 'dva';
-import { createActions } from '@/utils';
+import { createActions, createAction } from '@/utils';
 import BaseMenu from '@/components/BaseMenu';
 
 const { Header, Sider, Content } = Layout;
@@ -32,6 +32,8 @@ export default class BasicLayout extends React.PureComponent {
         this.setState({ openKeys: openKeys, selectedKeys: selectedKeys });
       })
     );
+    // 获取当前用户
+    this.props.dispatch(createAction('app/getUserInfo')());
   }
 
   componentDidUpdate(preProps) {}
@@ -40,12 +42,10 @@ export default class BasicLayout extends React.PureComponent {
 
   // 菜单选中
   _onMenuSelect = ({ item, key, selectedKeys }) => {
-    console.log(item);
-
     this.setState({ selectedKeys });
   };
   render() {
-    const { menuTree } = this.props;
+    const { menuTree, userInfo } = this.props;
     const { openKeys, selectedKeys } = this.state;
     return (
       <Layout style={{ minHeight: '100vh' }}>
@@ -69,12 +69,7 @@ export default class BasicLayout extends React.PureComponent {
         <Layout>
           {/* 头部 */}
           <Header style={{ padding: 0 }}>
-            <GlobalHeader
-              currentUser={
-                '' // onNoticeVisibleChange={this.handleNoticeVisibleChange} // onMenuClick={this.handleMenuClick} // onNoticeClear={this.handleNoticeClear} // onCollapse={handleMenuCollapse}
-              }
-              {...this.props}
-            />
+            <GlobalHeader currentUser={userInfo} {...this.props} />
           </Header>
           {/* 内容 */}
           <Content>{this.props.children}</Content>

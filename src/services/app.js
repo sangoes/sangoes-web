@@ -43,3 +43,11 @@ export async function getImageCaptcha(random) {
 export async function getUserMenu(params) {
   return request('/api/admin/menu/user/tree');
 }
+
+/**
+ * 获取当前用户信息
+ * @param {参数} params
+ */
+export async function getUserInfo(params) {
+  return request('/api/admin/user/info');
+}

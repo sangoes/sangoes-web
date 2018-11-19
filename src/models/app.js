@@ -5,6 +5,7 @@ import {
   getPublicKeyByRandom,
   getImageCaptcha,
   getUserMenu,
+  getUserInfo,
 } from '../services/app';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
@@ -18,6 +19,7 @@ export default {
     status: undefined,
     publicKey: '',
     imgCaptcha: '',
+    userInfo: {},
   },
 
   effects: {
@@ -68,6 +70,15 @@ export default {
             selectedKeys: [selectedKeys],
           })
         );
+        // 成功返回
+        callback && callback();
+      }
+    },
+    // 获取当前用户信息
+    *getUserInfo({ payload, callback }, { call, put }) {
+      const response = yield call(getUserInfo, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ userInfo: response.data }));
         // 成功返回
         callback && callback();
       }
