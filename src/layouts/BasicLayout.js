@@ -44,6 +44,18 @@ export default class BasicLayout extends React.PureComponent {
   _onMenuSelect = ({ item, key, selectedKeys }) => {
     this.setState({ selectedKeys });
   };
+  // 下拉菜单
+  _handleMenuClick = ({ key }) => {
+    switch (key) {
+      case 'logout':
+        // 退出登录
+        this.props.dispatch(createAction('app/logout')());
+        break;
+
+      default:
+        break;
+    }
+  };
   render() {
     const { menuTree, userInfo } = this.props;
     const { openKeys, selectedKeys } = this.state;
@@ -69,7 +81,11 @@ export default class BasicLayout extends React.PureComponent {
         <Layout>
           {/* 头部 */}
           <Header style={{ padding: 0 }}>
-            <GlobalHeader currentUser={userInfo} {...this.props} />
+            <GlobalHeader
+              currentUser={userInfo}
+              onMenuClick={this._handleMenuClick}
+              {...this.props}
+            />
           </Header>
           {/* 内容 */}
           <Content>{this.props.children}</Content>

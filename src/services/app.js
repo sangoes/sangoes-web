@@ -51,3 +51,16 @@ export async function getUserMenu(params) {
 export async function getUserInfo(params) {
   return request('/api/admin/user/info');
 }
+
+/**
+ * 注销登录
+ * @param
+ */
+export async function logout() {
+  return request(`/api/oauth/logout`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',
+    },
+  });
+}

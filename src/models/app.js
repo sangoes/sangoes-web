@@ -6,6 +6,7 @@ import {
   getImageCaptcha,
   getUserMenu,
   getUserInfo,
+  logout,
 } from '../services/app';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
@@ -44,18 +45,20 @@ export default {
     },
     // 退出
     *logout({ payload }, { call, put }) {
-      // 清空session
-      sessionStorage.removeItem('access_token');
-      // TODO: 网络清除
-      // 重定向login
-      yield put(
-        routerRedux.push({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        })
-      );
+      const response = yield call(logout, payload);
+      if (net(response)) {
+        // 清空session
+        sessionStorage.removeItem('access_token');
+        // 重定向login
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
     // 获取当前用户的菜单树形结果
     *getUserMenu({ payload, callback }, { call, put }) {
