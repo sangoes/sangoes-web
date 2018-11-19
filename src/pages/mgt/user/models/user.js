@@ -22,6 +22,8 @@ export default {
         callback && callback();
         // 添加成功
         message.success(response.msg);
+        // 获取用户分页
+        yield put(createAction('getUserPage')());
       }
     },
     // 获取用户分页
