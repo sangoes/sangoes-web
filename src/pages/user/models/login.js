@@ -32,13 +32,13 @@ export default {
     },
     *loginAccount({ payload }, { call, put }) {
       const response = yield call(loginAccount, payload);
-      if (response.access_token) {
+      if (net(response)) {
         //删除旧的token
         sessionStorage.removeItem('access_token');
         //登录成功
         message.success('登录成功');
         //保存 token
-        sessionStorage.setItem('access_token', stringify(response));
+        sessionStorage.setItem('access_token', stringify(response.data));
         //调整首页
         yield put(
           routerRedux.push({

@@ -19,7 +19,7 @@ export async function login(params) {
  * @param {参数} params
  */
 export async function loginAccount(params) {
-  return request('/api/oauth/token', {
+  return request('/api/signin', {
     method: 'POST',
     headers: {
       Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',

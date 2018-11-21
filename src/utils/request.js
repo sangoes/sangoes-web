@@ -77,7 +77,7 @@ export default function request(url, option) {
   // 获取token
   const token = sessionStorage.getItem('access_token');
   if (token) {
-    const access_token = parse(token).access_token;
+    const access_token = parse(token).value;
     newOptions.headers = { Authorization: `Bearer ${access_token}` };
   }
   if (

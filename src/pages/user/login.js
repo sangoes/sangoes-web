@@ -70,7 +70,8 @@ class LoginPage extends Component {
         formData.append('signinType', '201');
         formData.append('publicRandom', publicRandom);
         formData.append('captchaRandom', captchaRandom);
-        formData.append('grant_type', 'password');
+        formData.append('captcha', values.captcha);
+        formData.append('type', 'account');
         this.props.dispatch(createAction('login/loginAccount')(formData));
       }
     }
