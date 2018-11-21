@@ -51,13 +51,13 @@ class LoginPage extends Component {
     if (!err) {
       // 手机登录
       if (type === 'mobile') {
-        this.props.dispatch(
-          createAction('login/loginMobile')({
-            ...values,
-            signinType: '201',
-            grant_type: 'password',
-          })
-        );
+        const formData = new FormData();
+        formData.append('mobile', values.mobile);
+        formData.append('signinType', '201');
+        formData.append('captchaRandom', captchaRandom);
+        formData.append('captcha', values.captcha);
+        formData.append('type', 'mobile');
+        this.props.dispatch(createAction('login/login')(formData));
       }
       // 账户登录
       if (type === 'account') {
@@ -72,7 +72,7 @@ class LoginPage extends Component {
         formData.append('captchaRandom', captchaRandom);
         formData.append('captcha', values.captcha);
         formData.append('type', 'account');
-        this.props.dispatch(createAction('login/loginAccount')(formData));
+        this.props.dispatch(createAction('login/login')(formData));
       }
     }
   };

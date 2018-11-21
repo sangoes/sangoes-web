@@ -13,25 +13,8 @@ export default {
   },
 
   effects: {
-    *loginMobile({ payload }, { call, put }) {
+    *login({ payload }, { call, put }) {
       const response = yield call(login, payload);
-      if (net(response)) {
-        //删除旧的token
-        sessionStorage.removeItem('access_token');
-        //登录成功
-        message.success(response.msg);
-        //保存 token
-        sessionStorage.setItem('access_token', response.data);
-        //调整首页
-        yield put(
-          routerRedux.push({
-            pathname: '/',
-          })
-        );
-      }
-    },
-    *loginAccount({ payload }, { call, put }) {
-      const response = yield call(loginAccount, payload);
       if (net(response)) {
         //删除旧的token
         sessionStorage.removeItem('access_token');
