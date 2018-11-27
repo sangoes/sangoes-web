@@ -71,8 +71,9 @@ export default class BaseMenu extends Component {
         <Menu
           mode="inline"
           theme={theme || 'dark'}
+          // defaultSelectedKeys={selectedKeys}
           selectedKeys={selectedKeys}
-          openKeys={openKeys}
+          defaultOpenKeys={openKeys}
           style={{ minHeight: '100vh' }}
           onSelect={onSelect}
         >

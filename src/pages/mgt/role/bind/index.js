@@ -158,7 +158,7 @@ export default class BindMenuPage extends Component {
             <Card className={styles.menu}>
               <Tree
                 checkable
-                expandedKeys={expandedKeys}
+                // expandedKeys={expandedKeys}
                 checkedKeys={checkedKeys}
                 selectedKeys={selectedKeys}
                 onSelect={this._onSelect}
