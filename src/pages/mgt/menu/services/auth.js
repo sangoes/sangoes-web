@@ -16,3 +16,19 @@ export async function addAuth(params) {
 export async function getAuthPage(params) {
   return request(`/api/admin/auth/page?${stringify(params)}`);
 }
+
+/**
+ * 更新权限
+ * @param  params
+ */
+export async function updateAuth(params) {
+  return request('/api/admin/auth/update', { method: 'PUT', body: params });
+}
+
+/**
+ * 删除权限
+ * @param  params
+ */
+export async function deleteAuth(params) {
+  return request('/api/admin/auth/delete', { method: 'DELETE', body: params });
+}

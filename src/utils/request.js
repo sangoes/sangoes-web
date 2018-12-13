@@ -28,7 +28,6 @@ const preCheckStatus = response => {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
-  console.log(response);
   // 拦截非json返回
   // 格式化text
   const msg = codeMessage[response.status] || response.msg;
@@ -41,7 +40,6 @@ const preCheckStatus = response => {
 };
 // json返回
 const CheckStatus = response => {
-  console.log(response);
   // 不拦截
   if ((response.code >= 200 && response.code < 300) || response.access_token) {
     return response;
@@ -86,8 +84,6 @@ export default function request(url, option) {
     newOptions.method === 'DELETE'
   ) {
     if (!(newOptions.body instanceof FormData)) {
-      console.log('xxxxx');
-
       newOptions.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
@@ -95,7 +91,6 @@ export default function request(url, option) {
       };
       newOptions.body = JSON.stringify(newOptions.body);
     } else {
-      console.log('aaaaaa');
       // newOptions.body is FormData
       newOptions.headers = {
         Accept: 'application/json',

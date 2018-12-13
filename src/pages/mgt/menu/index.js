@@ -30,6 +30,7 @@ export default class MenuMgtPage extends Component {
     this.state = {
       selectedRows: [],
       menuId: null,
+      authItem: null,
       selectedKeys: [],
       openKeys: [],
     };
@@ -64,6 +65,18 @@ export default class MenuMgtPage extends Component {
     const { dispatch, form } = this.props;
     dispatch(
       createActions('auth/addAuth')(fields)(() => {
+        // 清空form
+        form.resetFields();
+        // 关闭弹窗
+        this.NewAuthPage.hide();
+      })
+    );
+  };
+  // 更新权限点击确定
+  _handleUpdateAuth = fields => {
+    const { dispatch, form } = this.props;
+    dispatch(
+      createActions('auth/updateAuth')(fields)(() => {
         // 清空form
         form.resetFields();
         // 关闭弹窗
@@ -134,14 +147,38 @@ export default class MenuMgtPage extends Component {
     // 网络获取
     // this._getRolePageNet(params);
   };
+  // 下拉项点击
+  handleAuthMenuClick = e => {
+    const { dispatch, menuTree, selectedKeys } = this.props;
+    switch (e.key) {
+      // 修改
+      case 'edit':
+        const { authItem, menuId } = this.state;
+        this.NewAuthPage.showUpdate(authItem, menuId || selectedKeys[0]);
+        break;
+      default:
+        break;
+    }
+  };
   // 更多下拉
   moreMenu = (
-    <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
+    <Menu onClick={this.handleAuthMenuClick} selectedKeys={[]}>
       <Menu.Item key="edit">修改</Menu.Item>
-      <Menu.Item key="bindUser">绑定角色</Menu.Item>
-      <Menu.Item key="reset">重置密码</Menu.Item>
     </Menu>
   );
+  // 删除权限
+  _deleteAuth = item => {
+    const { dispatch, selectedKeys } = this.props;
+    const { menuId } = this.state;
+    dispatch(
+      createAction('auth/deleteAuth')({
+        authId: item.id,
+        menuId: menuId || selectedKeys[0],
+      })
+    );
+  };
+  // 批量删除权限
+  _onBatchDeleteAuthClick = () => {};
   // table列表
   columns = [
     {
@@ -170,12 +207,17 @@ export default class MenuMgtPage extends Component {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <Button size="small" type="danger" ghost onClick={() => {}}>
+          <Button size="small" type="danger" ghost onClick={() => this._deleteAuth(record)}>
             删除
           </Button>
           <Divider type="vertical" />
           <Dropdown overlay={this.moreMenu} trigger={['click']}>
-            <Button size="small" onClick={() => {}}>
+            <Button
+              size="small"
+              onClick={() => {
+                this.setState({ authItem: record });
+              }}
+            >
               更多 <Icon type="down" />
             </Button>
           </Dropdown>
@@ -240,7 +282,7 @@ export default class MenuMgtPage extends Component {
                   </Button>
                   {selectedRows.length > 0 && (
                     <span>
-                      <Button type="danger" ghost>
+                      <Button type="danger" ghost onClick={this._onBatchDeleteAuthClick}>
                         批量删除
                       </Button>
                     </span>
@@ -270,6 +312,7 @@ export default class MenuMgtPage extends Component {
         <NewAuthPage
           wrappedComponentRef={ref => (this.NewAuthPage = ref)}
           onOkHandle={this._handleAddAuth}
+          onUpdateHandle={this._handleUpdateAuth}
         />
       </Layout>
     );
