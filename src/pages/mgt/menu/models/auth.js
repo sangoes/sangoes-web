@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addAuth, getAuthPage, updateAuth, deleteAuth } from '../services/auth';
+import { addAuth, getAuthPage, updateAuth, deleteAuth, batchDeleteAuth } from '../services/auth';
 
 export default {
   namespace: 'auth',
@@ -51,7 +51,19 @@ export default {
         // 获取权限分页
         const { menuId } = payload;
         yield put(createAction('getAuthPage')({ menuId }));
-        // 添加成功
+        // 删除成功
+        message.success(response.msg);
+      }
+    },
+    // 批量删除权限
+    *batchDeleteAuth({ payload, callback }, { call, put }) {
+      const response = yield call(batchDeleteAuth, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取权限分页
+        const { menuId } = payload;
+        yield put(createAction('getAuthPage')({ menuId }));
+        // 删除成功
         message.success(response.msg);
       }
     },

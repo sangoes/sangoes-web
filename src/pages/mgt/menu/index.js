@@ -126,9 +126,8 @@ export default class MenuMgtPage extends Component {
   };
   // table变化
   _handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-
+    const { dispatch, selectedKeys } = this.props;
+    const { formValues, menuId } = this.state;
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
       newObj[key] = getValue(filtersArg[key]);
@@ -144,8 +143,10 @@ export default class MenuMgtPage extends Component {
     if (sorter.field) {
       params.sorter = `${sorter.field}_${sorter.order}`;
     }
-    // 网络获取
-    // this._getRolePageNet(params);
+    // 参数
+    params.menuId = menuId || selectedKeys[0];
+    // 获取权限分页
+    this._getAuthPage(params);
   };
   // 下拉项点击
   handleAuthMenuClick = e => {
@@ -178,7 +179,19 @@ export default class MenuMgtPage extends Component {
     );
   };
   // 批量删除权限
-  _onBatchDeleteAuthClick = () => {};
+  _onBatchDeleteAuthClick = () => {
+    const { selectedRows, menuId } = this.state;
+    const { selectedKeys } = this.props;
+    const keys = selectedRows.map(item => {
+      return item.id;
+    });
+    this.props.dispatch(
+      createAction('auth/batchDeleteAuth')({
+        authIds: keys,
+        menuId: menuId || selectedKeys[0],
+      })
+    );
+  };
   // table列表
   columns = [
     {
@@ -228,13 +241,18 @@ export default class MenuMgtPage extends Component {
   // 菜单选中
   _onMenuSelect = ({ item, key, selectedKeys }) => {
     this.setState({ menuId: key, selectedKeys });
-    this.props.dispatch(createAction('auth/getAuthPage')({ menuId: key }));
+    // 获取分页
+    this._getAuthPage({ menuId: key });
   };
   // 新建权限
   _onNewAuthClick = () => {
     const { selectedKeys } = this.props;
     const menuId = this.state.menuId || selectedKeys[0];
     this.NewAuthPage.show(menuId);
+  };
+  // 获取权限分页
+  _getAuthPage = params => {
+    this.props.dispatch(createAction('auth/getAuthPage')(params));
   };
 
   render() {

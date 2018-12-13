@@ -32,3 +32,11 @@ export async function updateAuth(params) {
 export async function deleteAuth(params) {
   return request('/api/admin/auth/delete', { method: 'DELETE', body: params });
 }
+
+/**
+ * 批量删除权限
+ * @param  params
+ */
+export async function batchDeleteAuth(params) {
+  return request('/api/admin/auth/batch/delete', { method: 'DELETE', body: params });
+}
