@@ -35,7 +35,7 @@ export default class NewMenuPage extends Component {
       onOkHandle(fieldsValue);
     });
   }
-
+  // 渲染父菜单
   _renderSelect() {
     const { menus } = this.props;
     const data = [];
@@ -66,6 +66,7 @@ export default class NewMenuPage extends Component {
   render() {
     const { form, onOkHandle } = this.props;
     const { item } = this.state;
+
     return (
       <Modal
         destroyOnClose

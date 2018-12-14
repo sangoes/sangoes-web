@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addMenu, getMenuTree, getMenuList } from '../services/menu';
+import { addMenu, getMenuTree, getMenuList, updateMenu, deleteMenu } from '../services/menu';
 import { getKeys } from '@/utils/utils';
 
 export default {
@@ -53,6 +53,26 @@ export default {
       const response = yield call(getMenuList, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ menuList: response.data }));
+      }
+    },
+    // 更新菜单
+    *updateMenu({ payload, callback }, { call, put }) {
+      const response = yield call(updateMenu, payload);
+      if (net(response)) {
+        // 获取菜单树形
+        yield put(createAction('getMenuTree')());
+        // 更新成功
+        message.success(response.msg);
+      }
+    },
+    // 删除菜单
+    *deleteMenu({ payload, callback }, { call, put }) {
+      const response = yield call(deleteMenu, payload);
+      if (net(response)) {
+        // 获取菜单树形
+        yield put(createAction('getMenuTree')());
+        // 删除成功
+        message.success(response.msg);
       }
     },
   },

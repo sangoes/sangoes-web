@@ -25,5 +25,25 @@ export async function getMenuTree(params) {
  * @param {参数} params
  */
 export async function getMenuList(params) {
-  return request('/ap/admin/menu/list');
+  return request('/api/admin/menu/list');
+}
+/**
+ * 更新菜单
+ * @param  params
+ */
+export async function updateMenu(params) {
+  return request('/api/admin/menu/update', {
+    method: 'PUT',
+    body: params,
+  });
+}
+/**
+ * 删除菜单
+ * @param  params
+ */
+export async function deleteMenu(params) {
+  return request('/api/admin/menu/delete', {
+    method: 'DELETE',
+    body: params,
+  });
 }

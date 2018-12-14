@@ -1,6 +1,18 @@
 import React, { Component, Fragment } from 'react';
 import styles from './index.less';
-import { Layout, Menu, Breadcrumb, Icon, Button, Input, Divider, Form, Dropdown } from 'antd';
+import {
+  Layout,
+  Menu,
+  Breadcrumb,
+  Icon,
+  Button,
+  Input,
+  Divider,
+  Form,
+  Dropdown,
+  Popconfirm,
+  Modal,
+} from 'antd';
 import { PageHeader } from 'ant-design-pro';
 import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
@@ -14,6 +26,7 @@ import StandardTable from '@/components/StandardTable';
 
 const { SubMenu } = Menu;
 const { Header, Content, Footer, Sider } = Layout;
+const confirm = Modal.confirm;
 
 /**
  *菜单 权限 管理
@@ -87,16 +100,24 @@ export default class MenuMgtPage extends Component {
   // 下拉项点击
   handleMenuClick = e => {
     const { dispatch, menuTree, selectedKeys } = this.props;
+    const menuId = this.state.menuId || selectedKeys[0];
     switch (e.key) {
       case 'add':
         // 获取item
-        const menuId = this.state.menuId || selectedKeys[0];
         const item = this.getItem(menuTree, menuId);
         this.NewMenuPage.show(item);
         break;
       case 'edit':
         break;
       case 'delete':
+        // 对话框
+        confirm({
+          title: '确认删除菜单?',
+          content: '一旦删除将不可恢复',
+          onOk() {
+            dispatch(createAction('menu/deleteMenu')({ menuId: menuId }));
+          },
+        });
         break;
       default:
         break;
@@ -171,26 +192,39 @@ export default class MenuMgtPage extends Component {
   _deleteAuth = item => {
     const { dispatch, selectedKeys } = this.props;
     const { menuId } = this.state;
-    dispatch(
-      createAction('auth/deleteAuth')({
-        authId: item.id,
-        menuId: menuId || selectedKeys[0],
-      })
-    );
+    confirm({
+      title: '确定删除权限?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(
+          createAction('auth/deleteAuth')({
+            authId: item.id,
+            menuId: menuId || selectedKeys[0],
+          })
+        );
+      },
+    });
   };
   // 批量删除权限
   _onBatchDeleteAuthClick = () => {
     const { selectedRows, menuId } = this.state;
-    const { selectedKeys } = this.props;
+    const { dispatch, selectedKeys } = this.props;
     const keys = selectedRows.map(item => {
       return item.id;
     });
-    this.props.dispatch(
-      createAction('auth/batchDeleteAuth')({
-        authIds: keys,
-        menuId: menuId || selectedKeys[0],
-      })
-    );
+    // 对话框
+    confirm({
+      title: '确定批量删除权限?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(
+          createAction('auth/batchDeleteAuth')({
+            authIds: keys,
+            menuId: menuId || selectedKeys[0],
+          })
+        );
+      },
+    });
   };
   // table列表
   columns = [
@@ -207,6 +241,10 @@ export default class MenuMgtPage extends Component {
       dataIndex: 'action',
     },
     {
+      title: '请求方法',
+      dataIndex: 'method',
+    },
+    {
       title: '描述',
       dataIndex: 'des',
     },
@@ -220,6 +258,7 @@ export default class MenuMgtPage extends Component {
       title: '操作',
       render: (text, record) => (
         <Fragment>
+          {/* 删除确认 */}
           <Button size="small" type="danger" ghost onClick={() => this._deleteAuth(record)}>
             删除
           </Button>
