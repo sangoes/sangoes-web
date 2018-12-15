@@ -11,28 +11,53 @@ const FormItem = Form.Item;
 export default class NewMenuPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { modalVisible: false, item: { key: '-1', label: '顶级菜单' } };
+    this.state = { modalVisible: false, item: { key: '-1', label: '顶级菜单' }, menuItem: null };
   }
 
   componentDidMount() {}
 
   // 显示
   show(item) {
-    this.setState({ modalVisible: true, item: { key: item.id, label: item.menuName } });
+    const parentItem = this._getParentItem(item);
+    // 清空form
+    this.setState({
+      modalVisible: true,
+      item: { key: parentItem.id, label: parentItem.menuName },
+      menuItem: null,
+    });
+  }
+  // 显示
+  showUpdate(item) {
+    const parentItem = this._getParentItem(item);
+    // 清空form
+    this.setState({
+      modalVisible: true,
+      item: { key: parentItem.id, label: parentItem.menuName },
+      menuItem: item,
+    });
   }
   // 隐藏
   hide() {
     this.setState({ modalVisible: false });
   }
+  // 获取parentItem
+  _getParentItem(item) {
+    const { menus } = this.props;
+    const parentItem = menus.find(itemVal => {
+      return itemVal.id === item.parentId;
+    });
+    return parentItem;
+  }
   // 确认
   _onOkHandle() {
-    const { form, onOkHandle } = this.props;
+    const { form, onOkHandle, onUpdateHandle } = this.props;
+    const { menuItem } = this.state;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       // 设置parent id
       fieldsValue.parentId = fieldsValue.parentId.key;
       // 调用
-      onOkHandle(fieldsValue);
+      menuItem ? onUpdateHandle(fieldsValue) : onOkHandle(fieldsValue);
     });
   }
   // 渲染父菜单
@@ -65,19 +90,32 @@ export default class NewMenuPage extends Component {
   }
   render() {
     const { form, onOkHandle } = this.props;
-    const { item } = this.state;
-
+    const { item, menuItem } = this.state;
     return (
       <Modal
         destroyOnClose
-        title="新建菜单"
+        title={menuItem ? '更新菜单' : '新建菜单'}
         visible={this.state.modalVisible}
         onCancel={() => this.hide()}
         onOk={() => {
           this._onOkHandle();
         }}
       >
-        {/* <Input placeholder="父节菜单" disabled /> */}
+        {/* 隐藏id */}
+        {menuItem && (
+          <FormItem
+            labelCol={{ span: 5 }}
+            wrapperCol={{ span: 15 }}
+            label="主键"
+            style={{ display: 'none' }}
+          >
+            {form.getFieldDecorator('id', {
+              initialValue: menuItem && menuItem.id,
+              rules: [{ required: true }],
+            })(<Input placeholder="主键" disabled style={{ display: 'none' }} />)}
+          </FormItem>
+        )}
+        {/* 父节菜单 */}
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="父节菜单">
           {form.getFieldDecorator('parentId', {
             initialValue: item,
@@ -86,23 +124,47 @@ export default class NewMenuPage extends Component {
         </FormItem>
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="菜单名">
           {form.getFieldDecorator('menuName', {
-            rules: [{ required: true, message: '输入菜单名称2-20位', min: 2, max: 20 }],
+            initialValue: menuItem && menuItem.name,
+            rules: [
+              {
+                required: true,
+                message: '输入菜单名称2-20位',
+                min: 2,
+                max: 20,
+              },
+            ],
           })(<Input placeholder="输入菜单名称2-20位" />)}
         </FormItem>
 
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="菜单编码">
           {form.getFieldDecorator('menuCode', {
-            rules: [{ required: true, message: '输入菜单编码2-15位', min: 2, max: 15 }],
+            initialValue: menuItem && menuItem.menuCode,
+            rules: [
+              {
+                required: true,
+                message: '输入菜单编码2-15位',
+                min: 2,
+                max: 15,
+              },
+            ],
           })(<Input placeholder="输入菜单编码2-15位" />)}
         </FormItem>
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图标">
           {form.getFieldDecorator('icon', {
+            initialValue: menuItem && menuItem.icon,
             rules: [{ required: false, message: '图标名称' }],
           })(<Input placeholder="图标名称" />)}
         </FormItem>
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="描述">
           {form.getFieldDecorator('des', {
-            rules: [{ required: false, message: '描述最多50个字符', max: 50 }],
+            initialValue: menuItem && menuItem.des,
+            rules: [
+              {
+                required: false,
+                message: '描述最多50个字符',
+                max: 50,
+              },
+            ],
           })(<Input placeholder="描述" />)}
         </FormItem>
       </Modal>

@@ -61,6 +61,7 @@ export default {
       if (net(response)) {
         // 获取菜单树形
         yield put(createAction('getMenuTree')());
+        callback && callback();
         // 更新成功
         message.success(response.msg);
       }

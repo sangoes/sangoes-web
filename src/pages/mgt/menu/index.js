@@ -97,17 +97,29 @@ export default class MenuMgtPage extends Component {
       })
     );
   };
+  // 更新菜单点击确定
+  _handleUpdateMenu = fields => {
+    const { dispatch, form } = this.props;
+    dispatch(
+      createActions('menu/updateMenu')(fields)(() => {
+        // 清空form
+        form.resetFields();
+        // 关闭弹窗
+        this.NewMenuPage.hide();
+      })
+    );
+  };
   // 下拉项点击
   handleMenuClick = e => {
     const { dispatch, menuTree, selectedKeys } = this.props;
     const menuId = this.state.menuId || selectedKeys[0];
+    const item = this.getItem(menuTree, menuId);
     switch (e.key) {
       case 'add':
-        // 获取item
-        const item = this.getItem(menuTree, menuId);
         this.NewMenuPage.show(item);
         break;
       case 'edit':
+        this.NewMenuPage.showUpdate(item);
         break;
       case 'delete':
         // 对话框
@@ -364,6 +376,7 @@ export default class MenuMgtPage extends Component {
           wrappedComponentRef={ref => (this.NewMenuPage = ref)}
           menus={menuList}
           onOkHandle={this._handleAdd}
+          onUpdateHandle={this._handleUpdateMenu}
         />
         {/* 新建权限 */}
         <NewAuthPage
