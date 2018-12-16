@@ -40,3 +40,14 @@ export async function deleteUser(params) {
     body: params,
   });
 }
+
+/**
+ * 更新用户
+ * @param  params
+ */
+export async function updateUser(params) {
+  return request('/api/admin/user/update', {
+    method: 'PUT',
+    body: params,
+  });
+}

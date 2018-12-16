@@ -98,7 +98,10 @@ export default class UserMgtPage extends Component {
   // 下拉点击
   _handleMenuClick = e => {
     switch (e.key) {
+      // 更新
       case 'edit':
+        const item = this.state.userRecord;
+        this.NewUserPage.showUpdate(item);
         break;
       case 'bind':
         // 绑定角色
@@ -209,6 +212,18 @@ export default class UserMgtPage extends Component {
       },
     });
   };
+  // 更新用户确认
+  _handleUpdateUser = fields => {
+    const { dispatch, form } = this.props;
+    dispatch(
+      createActions('user/updateUser')(fields)(() => {
+        // 清空form
+        form.resetFields();
+        // 关闭弹窗
+        this.NewUserPage.hide();
+      })
+    );
+  };
   render() {
     const { selectedRows, userRecord, bindRoleVisible } = this.state;
     const { userList, userLoading, roles, keys } = this.props;
@@ -217,7 +232,6 @@ export default class UserMgtPage extends Component {
         <PageHeader title="用户管理" />
         <Card bordered={false} className={styles.card}>
           <div className={styles.tableList}>
-            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={() => this.NewUserPage.show()}>
                 新建
@@ -246,6 +260,7 @@ export default class UserMgtPage extends Component {
           ref={ref => (this.NewUserPage = ref)}
           form={this.props.form}
           onOkHandle={this._handleAdd}
+          onUpdateHandle={this._handleUpdateUser}
         />
         {/* 绑定角色 */}
         {bindRoleVisible && (
