@@ -30,3 +30,13 @@ export async function getBindRole(params) {
 export async function bindRole(params) {
   return request('/api/admin/user/bind/role', { method: 'POST', body: params });
 }
+/**
+ * 删除用户
+ * @param  params
+ */
+export async function deleteUser(params) {
+  return request('/api/admin/user/delete', {
+    method: 'DELETE',
+    body: params,
+  });
+}

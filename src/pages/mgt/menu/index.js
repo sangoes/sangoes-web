@@ -10,7 +10,6 @@ import {
   Divider,
   Form,
   Dropdown,
-  Popconfirm,
   Modal,
 } from 'antd';
 import { PageHeader } from 'ant-design-pro';

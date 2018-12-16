@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addUser, getUserPage, getBindRole, bindRole } from '../services/user';
+import { addUser, getUserPage, getBindRole, bindRole, deleteUser } from '../services/user';
 
 export default {
   namespace: 'user',
@@ -50,6 +50,15 @@ export default {
       if (net(response)) {
         callback && callback();
         // 添加成功
+        message.success(response.msg);
+      }
+    },
+    // 删除用户
+    *deleteUser({ payload, callback }, { call, put }) {
+      const response = yield call(deleteUser, payload);
+      if (net(response)) {
+        callback && callback();
+        // 删除成功
         message.success(response.msg);
       }
     },

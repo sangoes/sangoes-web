@@ -28,6 +28,8 @@ import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
 import BindRolePage from './bind';
 
+const confirm = Modal.confirm;
+
 /**
  * 用户管理
  */
@@ -148,7 +150,14 @@ export default class UserMgtPage extends Component {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <Button size="small" type="danger" ghost onClick={() => {}}>
+          <Button
+            size="small"
+            type="danger"
+            ghost
+            onClick={() => {
+              this._deleteUser(record);
+            }}
+          >
             删除
           </Button>
           <Divider type="vertical" />
@@ -184,6 +193,21 @@ export default class UserMgtPage extends Component {
   // 关闭角色绑定窗口
   _onBinRoleCancel = () => {
     this.setState({ bindRoleVisible: false });
+  };
+  // 删除用户
+  _deleteUser = item => {
+    const { dispatch } = this.props;
+    confirm({
+      title: '确定删除用户?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(
+          createAction('user/deleteUser')({
+            userId: item.id,
+          })
+        );
+      },
+    });
   };
   render() {
     const { selectedRows, userRecord, bindRoleVisible } = this.state;
