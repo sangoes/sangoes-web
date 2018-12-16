@@ -224,6 +224,22 @@ export default class UserMgtPage extends Component {
       })
     );
   };
+  // 批量删除用户
+  _onBatchDeleteUserClick = () => {
+    const { selectedRows } = this.state;
+    const { dispatch } = this.props;
+    const keys = selectedRows.map(item => {
+      return item.id;
+    });
+    // 对话框
+    confirm({
+      title: '确定批量删除用户?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(createAction('user/batchDeleteUser')({ userIds: keys }));
+      },
+    });
+  };
   render() {
     const { selectedRows, userRecord, bindRoleVisible } = this.state;
     const { userList, userLoading, roles, keys } = this.props;
@@ -238,7 +254,7 @@ export default class UserMgtPage extends Component {
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button type="danger" ghost>
+                  <Button type="danger" ghost onClick={this._onBatchDeleteUserClick}>
                     批量删除
                   </Button>
                 </span>

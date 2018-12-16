@@ -9,6 +9,7 @@ import {
   bindRole,
   deleteUser,
   updateUser,
+  batchDeleteUser,
 } from '../services/user';
 
 export default {
@@ -65,7 +66,20 @@ export default {
       const response = yield call(deleteUser, payload);
       if (net(response)) {
         callback && callback();
+        // 获取用户分页
+        yield put(createAction('getUserPage')());
         // 删除成功
+        message.success(response.msg);
+      }
+    },
+    // 批量删除用户
+    *batchDeleteUser({ payload, callback }, { call, put }) {
+      const response = yield call(batchDeleteUser, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取用户分页
+        yield put(createAction('getUserPage')());
+        // 批量删除成功
         message.success(response.msg);
       }
     },

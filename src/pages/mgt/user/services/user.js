@@ -51,3 +51,14 @@ export async function updateUser(params) {
     body: params,
   });
 }
+
+/**
+ * 批量删除用户
+ * @param  params
+ */
+export async function batchDeleteUser(params) {
+  return request('/api/admin/user/batch/delete', {
+    method: 'DELETE',
+    body: params,
+  });
+}
