@@ -2,7 +2,16 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net, createActions } from '@/utils';
 import { message } from 'antd';
-import { addRole, getRolePage, getBindMenu, getBindAuth, bindMenuAuth } from '../services/role';
+import {
+  addRole,
+  getRolePage,
+  getBindMenu,
+  getBindAuth,
+  bindMenuAuth,
+  deleteRole,
+  batchDeleteRole,
+  updateRole,
+} from '../services/role';
 import { getKeys } from '@/utils/utils';
 
 export default {
@@ -78,6 +87,39 @@ export default {
       if (net(response)) {
         callback && callback();
         // 添加成功
+        message.success(response.msg);
+      }
+    },
+    // 删除角色
+    *deleteRole({ payload, callback }, { call, put }) {
+      const response = yield call(deleteRole, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取角色分页
+        yield put(createAction('getRolePage')());
+        // 删除成功
+        message.success(response.msg);
+      }
+    },
+    // 批量删除角色
+    *batchDeleteRole({ payload, callback }, { call, put }) {
+      const response = yield call(batchDeleteRole, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取角色分页
+        yield put(createAction('getRolePage')());
+        // 删除成功
+        message.success(response.msg);
+      }
+    },
+    // 批量删除角色
+    *updateRole({ payload, callback }, { call, put }) {
+      const response = yield call(updateRole, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取角色分页
+        yield put(createAction('getRolePage')());
+        // 更新成功
         message.success(response.msg);
       }
     },

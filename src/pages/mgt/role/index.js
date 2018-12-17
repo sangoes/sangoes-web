@@ -28,6 +28,8 @@ import { connect } from 'dva';
 import NewRolePage from './new';
 import BindMenuPage from './bind';
 
+const confirm = Modal.confirm;
+
 /**
  * 角色管理
  */
@@ -96,6 +98,8 @@ export default class RoleMgtPage extends Component {
   _handleMenuClick = e => {
     switch (e.key) {
       case 'edit':
+        const item = this.state.roleRecord;
+        this.NewRolePage.showUpdate(item);
         break;
       case 'bind':
         this.setState({ bindMenuVisible: true });
@@ -141,7 +145,14 @@ export default class RoleMgtPage extends Component {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <Button size="small" type="danger" ghost onClick={() => {}}>
+          <Button
+            size="small"
+            type="danger"
+            ghost
+            onClick={() => {
+              this._deleteRole(record);
+            }}
+          >
             删除
           </Button>
           <Divider type="vertical" />
@@ -207,6 +218,49 @@ export default class RoleMgtPage extends Component {
     // 网络获取
     // this._getRolePageNet(params);
   };
+  // 删除角色
+  _deleteRole = item => {
+    const { dispatch } = this.props;
+    confirm({
+      title: '确定删除角色?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(
+          createAction('role/deleteRole')({
+            roleId: item.id,
+          })
+        );
+      },
+    });
+  };
+  // 批量删除角色
+  _onBatchDeleteRoleClick = () => {
+    const { selectedRows } = this.state;
+    const { dispatch } = this.props;
+    const keys = selectedRows.map(item => {
+      return item.id;
+    });
+    // 对话框
+    confirm({
+      title: '确定批量删除角色?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(createAction('role/batchDeleteRole')({ roleIds: keys }));
+      },
+    });
+  };
+  // 更新角色确认
+  _handleUpdateRole = fields => {
+    const { dispatch, form } = this.props;
+    dispatch(
+      createActions('role/updateRole')(fields)(() => {
+        // 清空form
+        form.resetFields();
+        // 关闭弹窗
+        this.NewRolePage.hide();
+      })
+    );
+  };
   // render
   render() {
     const { selectedRows, bindMenuVisible } = this.state;
@@ -222,7 +276,7 @@ export default class RoleMgtPage extends Component {
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button type="danger" ghost>
+                  <Button type="danger" ghost onClick={this._onBatchDeleteRoleClick}>
                     批量删除
                   </Button>
                 </span>
@@ -245,6 +299,7 @@ export default class RoleMgtPage extends Component {
           ref={ref => (this.NewRolePage = ref)}
           form={this.props.form}
           onOkHandle={this._handleAdd}
+          onUpdateHandle={this._handleUpdateRole}
         />
         {/* 绑定菜单 */}
         {bindMenuVisible ? (

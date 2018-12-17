@@ -38,3 +38,36 @@ export async function getBindAuth(params) {
 export async function bindMenuAuth(params) {
   return request('/api/admin/role/bind/menu', { method: 'POST', body: params });
 }
+
+/**
+ * 删除角色
+ * @param  params
+ */
+export async function deleteRole(params) {
+  return request('/api/admin/role/delete', {
+    method: 'DELETE',
+    body: params,
+  });
+}
+
+/**
+ * 批量删除角色
+ * @param  params
+ */
+export async function batchDeleteRole(params) {
+  return request('/api/admin/role/batch/delete', {
+    method: 'DELETE',
+    body: params,
+  });
+}
+
+/**
+ * 更新角色
+ * @param  params
+ */
+export async function updateRole(params) {
+  return request('/api/admin/role/update', {
+    method: 'PUT',
+    body: params,
+  });
+}
