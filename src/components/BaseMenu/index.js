@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Menu, Icon, Dropdown } from 'antd';
 import styles from './index.less';
 import Link from 'umi/link';
+import router from 'umi/router';
+import { isUrl } from '@/utils/utils';
 
 const { SubMenu } = Menu;
 
@@ -46,14 +48,37 @@ export default class BaseMenu extends Component {
     }
     return (
       <Menu.Item key={item.id}>
-        {/* TODO: 判断url为空或为http */}
+        {/* 判断是否为网址 */}
         {link ? (
-          <Link to={item.url || '/'}>
-            <span>
+          isUrl(item.url) ? (
+            // <Link to={'/url/' + item.menuCode}>
+            //   <span>
+            //     {item.icon && <Icon type={item.icon} />}
+            //     <span>{item.name}</span>
+            //   </span>
+            // </Link>
+            // 网站跳转
+            <span
+              onClick={() => {
+                router.push({
+                  pathname: '/url/' + item.menuCode,
+                  query: {
+                    url: item.url,
+                  },
+                });
+              }}
+            >
               {item.icon && <Icon type={item.icon} />}
               <span>{item.name}</span>
             </span>
-          </Link>
+          ) : (
+            <Link to={item.url || '/'}>
+              <span>
+                {item.icon && <Icon type={item.icon} />}
+                <span>{item.name}</span>
+              </span>
+            </Link>
+          )
         ) : (
           <span>
             {item.icon && <Icon type={item.icon} />}

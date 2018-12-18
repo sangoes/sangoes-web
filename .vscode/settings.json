@@ -9,7 +9,9 @@
     "**/.DS_Store": true,
     "**/.umi": true,
     "**/.umi-production": true,
-    ".vscode": true
+    ".vscode": true,
+    "**/.vsocde": true,
+    "**/.idea": true
   },
   "cSpell.words": [
     "Dropdown",
