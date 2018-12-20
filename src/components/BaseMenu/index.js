@@ -63,7 +63,7 @@ export default class BaseMenu extends Component {
                 router.push({
                   pathname: '/url/' + item.menuCode,
                   query: {
-                    url: item.url,
+                    item: item,
                   },
                 });
               }}

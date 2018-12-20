@@ -149,7 +149,12 @@ export default class NewMenuPage extends Component {
             ],
           })(<Input placeholder="输入菜单编码2-15位" />)}
         </FormItem>
-
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="菜单地址">
+          {form.getFieldDecorator('url', {
+            initialValue: menuItem && menuItem.url,
+            rules: [{ required: false, message: '菜单地址' }],
+          })(<Input placeholder="菜单地址(/mgt/menu或url)" />)}
+        </FormItem>
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="图标">
           {form.getFieldDecorator('icon', {
             initialValue: menuItem && menuItem.icon,
