@@ -57,7 +57,7 @@ export async function getUserInfo(params) {
  * @param
  */
 export async function logout() {
-  return request(`/api/oauth/logout`, {
+  return request(`/api/admin/user/logout`, {
     method: 'DELETE',
     headers: {
       Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',

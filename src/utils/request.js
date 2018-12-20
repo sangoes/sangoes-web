@@ -30,7 +30,7 @@ const preCheckStatus = response => {
   }
   // 拦截非json返回
   // 格式化text
-  const msg = codeMessage[response.status] || response.msg;
+  const msg = response.statusText || codeMessage[response.status] || response.msg;
   // 错误
   const error = new Error(msg);
   error.name = response.status;
@@ -105,21 +105,22 @@ export default function request(url, option) {
     })
     .then(CheckStatus)
     .catch(e => {
+      // status
       const status = e.name;
-
       const msg = e.msg;
-
-      // 请求失败
-      // if (status === 400) {
-      //   message.warning(msg);
-      //   return;
-      // }
-
+      // logout
       if (status === 401) {
         // 退出登录
-        window.g_app._store.dispatch({ type: 'app/logout' });
+        sessionStorage.removeItem('access_token');
+        router.push({
+          pathname: '/user/login',
+          search: stringify({
+            redirect: window.location.href,
+          }),
+        });
         return;
       }
+
       // 禁止访问
       if (status === 403) {
         router.push('/exception/403');

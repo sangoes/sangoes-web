@@ -47,6 +47,8 @@ export default {
     *logout({ payload }, { call, put }) {
       const response = yield call(logout, payload);
       if (net(response)) {
+        console.log('response:' + response);
+
         // 清空session
         sessionStorage.removeItem('access_token');
         // 重定向login
