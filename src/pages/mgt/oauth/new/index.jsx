@@ -48,6 +48,25 @@ export default class NewOAuthPage extends Component {
       onOkHandle(fieldsValue);
     });
   };
+  // 选择授权过期时间
+  _onTokenValidHandle = () => {};
+  // 渲染授权过期时间
+  _renderTokenValidSelect = () => {
+    const tokenValid = [{ key: 'xx', value: '123' }];
+    const data = [];
+    tokenValid.forEach(item => {
+      data.push(
+        <Option key={item.key} value={item.value}>
+          {item.value}
+        </Option>
+      );
+    });
+    return (
+      <Select defaultValue="a1" style={{ width: '100%' }} onChange={this._onTokenValidHandle}>
+        {data}
+      </Select>
+    );
+  };
   render() {
     const { form, visible, onCancel } = this.props;
     return (
