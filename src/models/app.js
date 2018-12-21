@@ -21,6 +21,9 @@ export default {
     publicKey: '',
     imgCaptcha: '',
     userInfo: {},
+    menuTree: [],
+    openKeys: [],
+    selectedKeys: [],
   },
 
   effects: {

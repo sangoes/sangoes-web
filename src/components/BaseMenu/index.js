@@ -3,7 +3,7 @@ import { Menu, Icon, Dropdown } from 'antd';
 import styles from './index.less';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { isUrl } from '@/utils/utils';
+import { isUrl, urlToList, getMenusSelectKeys } from '@/utils/utils';
 
 const { SubMenu } = Menu;
 
@@ -88,16 +88,23 @@ export default class BaseMenu extends Component {
       </Menu.Item>
     );
   };
-
   render() {
-    const { menuData, onSelect, openKeys, selectedKeys, theme } = this.props;
+    const { menuData, onSelect, openKeys, selectedKeys, theme, location } = this.props;
+    let keys = [];
+    if (location) {
+      keys = getMenusSelectKeys(menuData, location.pathname);
+    }
+    if (!keys.length) {
+      keys = selectedKeys;
+    }
     return (
       <div>
         <Menu
           mode="inline"
           theme={theme || 'dark'}
-          // defaultSelectedKeys={selectedKeys}
-          selectedKeys={selectedKeys}
+          selectedKeys={
+            keys // defaultSelectedKeys={selectedKeys}
+          }
           defaultOpenKeys={openKeys}
           style={{ minHeight: '100vh' }}
           onSelect={onSelect}

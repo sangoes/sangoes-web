@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Modal, Form, Input, Button, Row, Select, Radio, Icon } from 'antd';
-import { isArray } from 'util';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -66,7 +65,7 @@ export default class NewOAuthPage extends Component {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const val = fieldsValue.authorizedGrantTypes;
-      fieldsValue.authorizedGrantTypes = isArray(val) ? val.join(',') : val;
+      fieldsValue.authorizedGrantTypes = Array.isArray(val) ? val.join(',') : val;
       // 调用
       oauthItem ? onUpdateHandle(fieldsValue) : onOkHandle(fieldsValue);
     });

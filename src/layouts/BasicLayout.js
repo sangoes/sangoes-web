@@ -12,8 +12,9 @@ import BaseMenu from '@/components/BaseMenu';
 const { Header, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
 
-@connect(({ app }) => ({
+@connect(({ app, routing }) => ({
   ...app,
+  ...routing,
 }))
 export default class BasicLayout extends React.PureComponent {
   constructor(props) {
@@ -57,7 +58,7 @@ export default class BasicLayout extends React.PureComponent {
     }
   };
   render() {
-    const { menuTree, userInfo } = this.props;
+    const { menuTree, userInfo, location } = this.props;
     const { openKeys, selectedKeys } = this.state;
     return (
       <Layout style={{ minHeight: '100vh' }}>
@@ -73,6 +74,7 @@ export default class BasicLayout extends React.PureComponent {
           <BaseMenu
             link={true}
             menuData={menuTree}
+            location={location}
             openKeys={openKeys}
             selectedKeys={selectedKeys}
             onSelect={this._onMenuSelect}

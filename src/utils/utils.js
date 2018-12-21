@@ -2,6 +2,7 @@ import moment from 'moment';
 import React from 'react';
 import nzh from 'nzh/cn';
 import { parse, stringify } from 'qs';
+import pathToRegexp from 'path-to-regexp';
 
 /**
  * 获取keys
@@ -295,3 +296,59 @@ export function formatWan(val) {
 export function isAntdPro() {
   return window.location.hostname === 'preview.pro.ant.design';
 }
+/**
+ * url To list
+ * @param {地址} url
+ */
+export function urlToList(url) {
+  const urllist = url.split('/').filter(i => i);
+  return urllist.map((urlItem, index) => `/${urllist.slice(0, index + 1).join('/')}`);
+}
+
+export const getMenuMatches = (keys, path) =>
+  keys.filter(item => {
+    if (item) {
+      return pathToRegexp(item).test(path);
+    }
+    return false;
+  });
+
+/**
+ * 获取菜单key
+ * [{path:string},{path:string}] => {path,path2}
+ * @param {菜单} menuData
+ */
+export const getFlatMenuKeys = menuData => {
+  let keys = [];
+  menuData.forEach(item => {
+    keys.push(item.url);
+    if (item.children) {
+      keys = keys.concat(getFlatMenuKeys(item.children));
+    }
+  });
+  return keys;
+};
+
+/**
+ * 将树形变为list
+ * @param {数据} menuData
+ */
+export const flatMenuTree = menuData => {
+  let values = [];
+  menuData.forEach(item => {
+    values.push({ path: item.url, key: item.id });
+    if (item.children) {
+      values = values.concat(flatMenuTree(item.children));
+    }
+  });
+  return values;
+};
+
+/**
+ * 将树形变和路径相同
+ * @param {数据} menuData
+ */
+export const getMenusSelectKeys = (menuData, pathname) => {
+  const menus = flatMenuTree(menuData);
+  return menus.filter(item => item.path === pathname).map(item => item.key);
+};

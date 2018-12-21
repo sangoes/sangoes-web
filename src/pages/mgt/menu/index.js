@@ -30,9 +30,10 @@ const confirm = Modal.confirm;
 /**
  *菜单 权限 管理
  */
-@connect(({ menu, auth, loading }) => ({
+@connect(({ menu, auth, loading, routing }) => ({
   ...menu,
   ...auth,
+  ...routing,
   authLoading: loading.models.auth,
 }))
 @Form.create()
@@ -306,7 +307,7 @@ export default class MenuMgtPage extends Component {
   };
 
   render() {
-    const { menuTree, menuList, form, authList, authLoading } = this.props;
+    const { menuTree, menuList, form, authList, authLoading, location } = this.props;
     const { selectedRows, selectedKeys, openKeys } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={['add']}>
