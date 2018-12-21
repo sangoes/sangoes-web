@@ -19,23 +19,25 @@ import {
   Divider,
   Steps,
   Radio,
+  Modal,
 } from 'antd';
 import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
 import NewOAuthPage from './new';
 import StandardTable from '@/components/StandardTable';
 
+const confirm = Modal.confirm;
 const approve = ['是', '否'];
 
 /**
  * 授权管理
  */
 @Form.create()
-@connect(({ oauth }) => ({ ...oauth }))
+@connect(({ oauth, loading }) => ({ ...oauth, oauthLoading: loading.models.oauth }))
 export default class OAuthMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectedRows: [], newOAuthVisible: false };
+    this.state = { selectedRows: [], oauthItem: null };
   }
   componentDidMount = () => {
     // 获取授权分页
@@ -45,31 +47,59 @@ export default class OAuthMgtPage extends Component {
   _getOAuthPage(params) {
     this.props.dispatch(createAction('oauth/oauthPage')(params));
   }
-  // 显示/隐藏新建授权
-  _toggleNewOAuthPage = val => {
-    this.setState({ newOAuthVisible: val });
-  };
   // 添加或更新授权
   _onOkOAuthHandle = fields => {
     const { dispatch, form } = this.props;
-    fields.authorizedGrantTypes = fields.authorizedGrantTypes.join(',');
     dispatch(
       createActions('oauth/addOAuth')(fields)(() => {
         // 清空form
         form.resetFields();
         // 关闭弹窗
-        this._toggleNewOAuthPage(false);
+        this.NewOAuthPage.hide();
       })
     );
+  };
+  // 更新授权
+  _handleUpdateOAuth = fields => {
+    const { dispatch, form } = this.props;
+    dispatch(
+      createActions('oauth/updateOAuth')(fields)(() => {
+        // 清空form
+        form.resetFields();
+        // 关闭弹窗
+        this.NewOAuthPage.hide();
+      })
+    );
+  };
+  // 下拉点击
+  _handleMenuClick = e => {
+    const { oauthItem } = this.state;
+    switch (e.key) {
+      // 更新
+      case 'edit':
+        this.NewOAuthPage.showUpdate(oauthItem);
+        break;
+      default:
+        break;
+    }
   };
   // 更多下拉
   moreMenu = (
     <Menu onClick={this._handleMenuClick} selectedKeys={['edit']}>
       <Menu.Item key="edit">修改</Menu.Item>
-      <Menu.Item key="bind">绑定角色</Menu.Item>
-      <Menu.Item key="reset">重置密码</Menu.Item>
     </Menu>
   );
+  // 删除授权
+  _deleteOAuth = item => {
+    const { dispatch } = this.props;
+    confirm({
+      title: '确定删除授权?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(createAction('oauth/deleteOAuth')({ oauthId: item.id }));
+      },
+    });
+  };
   // table列表
   columns = [
     {
@@ -92,8 +122,7 @@ export default class OAuthMgtPage extends Component {
       title: '自动放行',
       dataIndex: 'autoapprove',
       render(val) {
-        let value = val ? 0 : 1;
-        return <div style={{ textAlign: 'center' }}>{approve[value]}</div>;
+        return <div style={{ textAlign: 'center' }}>{approve[val]}</div>;
       },
     },
     {
@@ -116,14 +145,7 @@ export default class OAuthMgtPage extends Component {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <Button
-            size="small"
-            type="danger"
-            ghost
-            onClick={() => {
-              this._deleteUser(record);
-            }}
-          >
+          <Button size="small" type="danger" ghost onClick={() => this._deleteOAuth(record)}>
             删除
           </Button>
           <Divider type="vertical" />
@@ -131,7 +153,7 @@ export default class OAuthMgtPage extends Component {
             <Button
               size="small"
               onClick={() => {
-                this.setState({ userRecord: record });
+                this.setState({ oauthItem: record });
               }}
             >
               更多 <Icon type="down" />
@@ -170,9 +192,24 @@ export default class OAuthMgtPage extends Component {
     // 网络获取
     this._getOAuthPage(params);
   };
+  // 批量删除授权
+  _onBatchDeleteOAuthClick = () => {
+    const { selectedRows } = this.state;
+    const { dispatch } = this.props;
+    const keys = selectedRows.map(item => {
+      return item.id;
+    });
+    confirm({
+      title: '确定批量删除授权?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(createAction('oauth/batchDeleteOAuth')({ oauthIds: keys }));
+      },
+    });
+  };
   render() {
-    const { form, oauthList } = this.props;
-    const { selectedRows, newOAuthVisible } = this.state;
+    const { form, oauthList, oauthLoading } = this.props;
+    const { selectedRows } = this.state;
     return (
       <div>
         <PageHeader title="授权管理" />
@@ -180,12 +217,12 @@ export default class OAuthMgtPage extends Component {
         <Card bordered={false} className={styles.card}>
           <div className={styles.tableList}>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this._toggleNewOAuthPage(true)}>
+              <Button icon="plus" type="primary" onClick={() => this.NewOAuthPage.show()}>
                 新建
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button type="danger" ghost onClick={this._onBatchDeleteUserClick}>
+                  <Button type="danger" ghost onClick={this._onBatchDeleteOAuthClick}>
                     批量删除
                   </Button>
                 </span>
@@ -194,7 +231,8 @@ export default class OAuthMgtPage extends Component {
           </div>
           <StandardTable
             rowKey="id"
-            selectedRows={selectedRows} // loading={userLoading}
+            selectedRows={selectedRows}
+            loading={oauthLoading}
             data={oauthList}
             columns={this.columns}
             onSelectRow={this._handleSelectRows}
@@ -202,14 +240,12 @@ export default class OAuthMgtPage extends Component {
           />
         </Card>
         {/* 新建授权 */}
-        {newOAuthVisible && (
-          <NewOAuthPage
-            visible={newOAuthVisible}
-            form={form}
-            onCancel={() => this._toggleNewOAuthPage(false)}
-            onOkHandle={this._onOkOAuthHandle}
-          />
-        )}
+        <NewOAuthPage
+          ref={ref => (this.NewOAuthPage = ref)}
+          form={form}
+          onOkHandle={this._onOkOAuthHandle}
+          onUpdateHandle={this._handleUpdateOAuth}
+        />
       </div>
     );
   }
