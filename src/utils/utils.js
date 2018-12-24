@@ -6,13 +6,13 @@ import pathToRegexp from 'path-to-regexp';
 
 /**
  * 获取keys
- * @param {获取keys} menuTree
+ * @param {获取keys} tree
  */
-export function getKeys(menuTree) {
-  if (!(menuTree && menuTree.length > 0)) {
+export function getKeys(tree) {
+  if (!(tree && tree.length > 0)) {
     return { openKeys: [], selectedKeys: [] };
   }
-  const menuItem = menuTree[0];
+  const dataItem = tree[0];
   const openKeys = [];
   let selectedKeys;
   function getKeysItem(item) {
@@ -23,7 +23,7 @@ export function getKeys(menuTree) {
       getKeysItem(item.children[0]);
     }
   }
-  getKeysItem(menuItem);
+  getKeysItem(dataItem);
   return { openKeys: openKeys, selectedKeys: selectedKeys };
 }
 
