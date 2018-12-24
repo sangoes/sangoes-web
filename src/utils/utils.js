@@ -352,3 +352,25 @@ export const getMenusSelectKeys = (menuData, pathname) => {
   const menus = flatMenuTree(menuData);
   return menus.filter(item => item.path === pathname).map(item => item.key);
 };
+
+/**
+ * 获取树形结构key值相同的第一个对象
+ * @param {树形} tree
+ * @param {key} key
+ */
+export function getTreeItem(tree, key) {
+  let element = null;
+  function getTree(data, id) {
+    data.forEach(item => {
+      if (item.id === id) {
+        element = item;
+        return;
+      }
+      if (item.children) {
+        getTree(item.children, id);
+      }
+    });
+  }
+  getTree(tree, key);
+  return element;
+}

@@ -18,7 +18,7 @@ export default {
       const response = yield call(addDepart, payload);
       if (net(response)) {
         // 获取部门树形
-        // yield put(createAction('getDepartTree')());
+        yield put(createAction('getDepartTree')());
         callback && callback();
         // 添加成功
         message.success(response.msg);

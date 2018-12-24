@@ -6,6 +6,7 @@ import { Layout, Input, Dropdown, Icon, Menu, Form, Skeleton } from 'antd';
 import NewDeptPage from './new';
 import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
+import { getTreeItem } from '@/utils/utils';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -16,24 +17,40 @@ const { SubMenu } = Menu;
 @connect(({ dept, loading }) => ({ ...dept, deptTreeLoading: loading.models.dept }))
 @Form.create()
 export default class DeptMgtPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { selectedKeys: props.selectedKeys, openKeys: props.openKeys, departId: null };
+  }
+
   // 渲染完成
   componentDidMount = () => {
     // 获取部门树形
     this._getDepartTree();
   };
+
   // 获取部门树形
   _getDepartTree = params => {
     const { dispatch } = this.props;
-    dispatch(createAction('dept/getDepartTree')(params));
+    dispatch(
+      createActions('dept/getDepartTree')(params)(() => {
+        const { selectedKeys, openKeys } = this.props;
+        this.setState({
+          selectedKeys,
+          openKeys,
+        });
+      })
+    );
   };
 
   // 处理部门按钮
   _handleDepartMenuClick = e => {
-    const { dispatch } = this.props;
+    const { dispatch, departTree } = this.props;
+    const { departId, selectedKeys } = this.state;
+    const item = getTreeItem(departTree, departId || selectedKeys[0]);
     switch (e.key) {
       // 添加部门
       case 'add':
-        this.NewDeptPage.show();
+        this.NewDeptPage.show(item);
         break;
       default:
         break;
@@ -81,12 +98,15 @@ export default class DeptMgtPage extends Component {
   };
   // 部门选中
   _onDepartSelect = ({ item, key, selectedKeys }) => {
-    // this.setState({ menuId: key, selectedKeys });
+    console.log(key);
+
+    this.setState({ departId: key, selectedKeys });
     // 获取分页
     // this._getAuthPage({ menuId: key });
   };
   render() {
-    const { departTree, openKeys, selectedKeys, deptTreeLoading } = this.props;
+    const { departTree, deptTreeLoading } = this.props;
+    const { openKeys, selectedKeys } = this.state;
     return (
       <Layout>
         <PageHeader title="部门管理" />

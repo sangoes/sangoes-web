@@ -13,13 +13,17 @@ export default class NewDeptPage extends Component {
     super(props);
     this.state = {
       modalVisible: false,
-      departItem: [{ key: '-1', value: '-1', title: '父级部门', children: null }],
+      departItem: ['-1'],
     };
   }
 
   // 展示
-  show = () => {
+  show = item => {
     this.setState({ modalVisible: true });
+    item &&
+      this.setState({
+        departItem: [item.id],
+      });
   };
   // 隐藏
   hide = () => {
@@ -29,8 +33,6 @@ export default class NewDeptPage extends Component {
   _onOkHandle = () => {
     const { form, onOkHandle, onUpdateHandle } = this.props;
     form.validateFields((err, fieldsValue) => {
-      console.log(fieldsValue);
-
       if (err) return;
       // 调用
       onOkHandle(fieldsValue);
@@ -45,17 +47,16 @@ export default class NewDeptPage extends Component {
       <TreeSelect
         style={{ width: 300 }}
         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-        placeholder="Please select"
         treeDefaultExpandAll
         onChange={this._onDeptChange}
       >
-        {getTreeNode(departTree)}
+        {getTreeNode(departTree) || <TreeNode title="父级部门" key="-1" value="-1" />}
       </TreeSelect>
     );
   }
   render() {
     const { form, departTree } = this.props;
-    const { modalVisible } = this.state;
+    const { modalVisible, departItem } = this.state;
 
     return (
       <Modal
@@ -68,7 +69,7 @@ export default class NewDeptPage extends Component {
         {/* 所属部门 */}
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属部门">
           {form.getFieldDecorator('parentId', {
-            // initialValue: -1,
+            initialValue: departItem,
             rules: [{ required: true, message: '所属部门不能为空' }],
           })(this._renderDepartSelect())}
         </FormItem>
