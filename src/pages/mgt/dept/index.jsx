@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PageHeader } from 'ant-design-pro';
 import styles from './index.less';
 import BaseMenu from '@/components/BaseMenu';
-import { Layout, Input, Dropdown, Icon, Menu, Form, Skeleton } from 'antd';
+import { Layout, Input, Dropdown, Icon, Menu, Form, Skeleton, Modal } from 'antd';
 import NewDeptPage from './new';
 import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
@@ -10,6 +10,7 @@ import { getTreeItem } from '@/utils/utils';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
+const confirm = Modal.confirm;
 
 /**
  * 部门管理
@@ -52,6 +53,25 @@ export default class DeptMgtPage extends Component {
       case 'add':
         this.NewDeptPage.show(item);
         break;
+      // 编辑部门
+      case 'edit':
+        this.NewDeptPage.showUpdate(item);
+        break;
+      // 删除部门
+      case 'delete':
+        // 对话框
+        confirm({
+          title: '确认删除部门?',
+          content: '一旦删除将不可恢复',
+          onOk() {
+            dispatch(
+              createAction('dept/deleteDepart')({
+                departId: departId || selectedKeys[0],
+              })
+            );
+          },
+        });
+        break;
       default:
         break;
     }
@@ -88,18 +108,16 @@ export default class DeptMgtPage extends Component {
   _handleUpdateDepart = fields => {
     const { dispatch, form } = this.props;
     dispatch(
-      createActions('depart/updateDepart')(fields)(() => {
+      createActions('dept/updateDepart')(fields)(() => {
         // 清空form
         form.resetFields();
         // 关闭弹窗
-        this.NewMenuPage.hide();
+        this.NewDeptPage.hide();
       })
     );
   };
   // 部门选中
   _onDepartSelect = ({ item, key, selectedKeys }) => {
-    console.log(key);
-
     this.setState({ departId: key, selectedKeys });
     // 获取分页
     // this._getAuthPage({ menuId: key });

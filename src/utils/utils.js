@@ -374,3 +374,24 @@ export function getTreeItem(tree, key) {
   getTree(tree, key);
   return element;
 }
+/**
+ * 获取树形key的父节点
+ * @param {树形} tree
+ * @param {指定key} key
+ */
+export function getTreeParentId(tree, key) {
+  let element = null;
+  function getTree(data, id) {
+    data.forEach(item => {
+      if (item.id === id) {
+        element = item.parentId;
+        return;
+      }
+      if (item.children) {
+        getTree(item.children, id);
+      }
+    });
+  }
+  getTree(tree, key);
+  return element;
+}
