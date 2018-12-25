@@ -51,12 +51,6 @@ export default class BaseMenu extends Component {
         {/* 判断是否为网址 */}
         {link ? (
           isUrl(item.url) ? (
-            // <Link to={'/url/' + item.menuCode}>
-            //   <span>
-            //     {item.icon && <Icon type={item.icon} />}
-            //     <span>{item.name}</span>
-            //   </span>
-            // </Link>
             // 网站跳转
             <span
               onClick={() => {
@@ -89,7 +83,7 @@ export default class BaseMenu extends Component {
     );
   };
   render() {
-    const { menuData, onSelect, openKeys, selectedKeys, theme, location } = this.props;
+    const { menuData, onSelect, openKeys, selectedKeys, theme, location, style } = this.props;
     let keys = [];
     if (location) {
       keys = getMenusSelectKeys(menuData, location.pathname);
@@ -106,7 +100,7 @@ export default class BaseMenu extends Component {
             keys // defaultSelectedKeys={selectedKeys}
           }
           defaultOpenKeys={openKeys}
-          style={{ minHeight: '100vh' }}
+          style={style || { minHeight: '100vh' }}
           onSelect={onSelect}
         >
           {this.getNavMenuItems(menuData)}

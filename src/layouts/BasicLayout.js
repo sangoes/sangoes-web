@@ -8,6 +8,7 @@ import Context from './MenuContext';
 import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
 import BaseMenu from '@/components/BaseMenu';
+import router from 'umi/router';
 
 const { Header, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
@@ -48,11 +49,18 @@ export default class BasicLayout extends React.PureComponent {
   // 下拉菜单
   _handleMenuClick = ({ key }) => {
     switch (key) {
+      // 个人中心
+      case 'userCenter':
+        router.push('/account/center');
+        break;
+      // 个人设置
+      case 'userSetting':
+        router.push('/account/setting');
+        break;
       case 'logout':
         // 退出登录
         this.props.dispatch(createAction('app/logout')());
         break;
-
       default:
         break;
     }
