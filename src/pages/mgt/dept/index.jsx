@@ -2,15 +2,18 @@ import React, { Component } from 'react';
 import { PageHeader } from 'ant-design-pro';
 import styles from './index.less';
 import BaseMenu from '@/components/BaseMenu';
-import { Layout, Input, Dropdown, Icon, Menu, Form, Skeleton, Modal } from 'antd';
+import { Layout, Input, Dropdown, Icon, Menu, Form, Skeleton, Modal, Tree, Button } from 'antd';
 import NewDeptPage from './new';
 import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
 import { getTreeItem } from '@/utils/utils';
+import { getDirectoryTreeNode } from '@/utils/reactUtils';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 const confirm = Modal.confirm;
+const DirectoryTree = Tree.DirectoryTree;
+const { TreeNode } = Tree;
 
 /**
  * 部门管理
@@ -20,7 +23,12 @@ const confirm = Modal.confirm;
 export default class DeptMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { selectedKeys: props.selectedKeys, openKeys: props.openKeys, departId: null };
+    this.state = {
+      selectedKeys: props.selectedKeys,
+      openKeys: props.openKeys,
+      departId: null,
+      selectedRows: [],
+    };
   }
 
   // 渲染完成
@@ -117,36 +125,64 @@ export default class DeptMgtPage extends Component {
     );
   };
   // 部门选中
-  _onDepartSelect = ({ item, key, selectedKeys }) => {
-    this.setState({ departId: key, selectedKeys });
+  _onDepartSelect = (selectedKeys, e) => {
+    this.setState({ departId: selectedKeys[0], selectedKeys });
     // 获取分页
     // this._getAuthPage({ menuId: key });
   };
   render() {
     const { departTree, deptTreeLoading } = this.props;
-    const { openKeys, selectedKeys } = this.state;
+    const { openKeys, selectedKeys, selectedRows } = this.state;
     return (
       <Layout>
         <PageHeader title="部门管理" />
         <Content className={styles.content}>
           <Layout className={styles.layout}>
             <Skeleton loading={deptTreeLoading} active>
+              {/* 侧边栏 */}
               <Sider className={styles.sider} width={220}>
                 <Input
                   className={styles.input}
                   addonAfter={this._dropdown}
                   placeholder="搜索公司或部门"
                 />
-                {/* 菜单 */}
-                <BaseMenu
-                  theme="light"
-                  link={false}
-                  menuData={departTree}
-                  openKeys={openKeys}
-                  selectedKeys={selectedKeys}
-                  onSelect={this._onDepartSelect}
-                />
+                {/* 部门 */}
+                <div className={styles.tree}>
+                  <DirectoryTree
+                    defaultSelectedKeys={selectedKeys}
+                    defaultExpandAll
+                    onSelect={this._onDepartSelect}
+                  >
+                    {getDirectoryTreeNode(departTree)}
+                  </DirectoryTree>
+                </div>
               </Sider>
+              <Content style={{ padding: '0 20px', minHeight: '100%' }}>
+                <div className={styles.tableList}>
+                  <div className={styles.tableListOperator}>
+                    <Button icon="plus" type="primary" onClick={this._onNewAuthClick}>
+                      添加成员
+                    </Button>
+                    {selectedRows.length > 0 && (
+                      <span>
+                        <Button type="danger" ghost onClick={this._onBatchDeleteAuthClick}>
+                          批量删除
+                        </Button>
+                      </span>
+                    )}
+                  </div>
+                  {/* 表格 */}
+                  {/* <StandardTable
+                    rowKey="id"
+                    selectedRows={selectedRows}
+                    loading={authLoading}
+                    data={authList}
+                    columns={this.columns}
+                    onSelectRow={this._handleSelectRows}
+                    onChange={this._handleStandardTableChange}
+                  /> */}
+                </div>
+              </Content>
             </Skeleton>
           </Layout>
         </Content>
