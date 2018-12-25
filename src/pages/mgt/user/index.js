@@ -27,6 +27,7 @@ import NewUserPage from './new';
 import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
 import BindRolePage from './bind';
+import BindDeptPage from './bind/dept';
 
 const confirm = Modal.confirm;
 
@@ -103,12 +104,15 @@ export default class UserMgtPage extends Component {
         const item = this.state.userRecord;
         this.NewUserPage.showUpdate(item);
         break;
+      // 绑定角色
       case 'bind':
-        // 绑定角色
-        this.setState({
-          bindRoleVisible: true,
-        });
+        this.setState({ bindRoleVisible: true });
         break;
+      // 绑定部门
+      case 'bindDept':
+        this.BindDeptPage.show();
+        break;
+      // 重置密码
       case 'reset':
         break;
       default:
@@ -120,6 +124,7 @@ export default class UserMgtPage extends Component {
     <Menu onClick={this._handleMenuClick} selectedKeys={['edit']}>
       <Menu.Item key="edit">修改</Menu.Item>
       <Menu.Item key="bind">绑定角色</Menu.Item>
+      <Menu.Item key="bindDept">绑定部门</Menu.Item>
       <Menu.Item key="reset">重置密码</Menu.Item>
     </Menu>
   );
@@ -287,6 +292,8 @@ export default class UserMgtPage extends Component {
             onCancel={this._onBinRoleCancel}
           />
         )}
+        {/* 绑定部门 */}
+        <BindDeptPage ref={ref => (this.BindDeptPage = ref)} />
       </div>
     );
   }
