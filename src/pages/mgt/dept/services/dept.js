@@ -41,3 +41,11 @@ export async function deleteDepart(params) {
     body: params,
   });
 }
+
+/**
+ * 获取部门成员
+ * @param {参数} params
+ */
+export async function listDepartMembers(params) {
+  return request(`/api/admin/depart/members/page?${stringify(params)}`);
+}

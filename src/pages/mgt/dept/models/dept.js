@@ -2,7 +2,13 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { getDepartTree, addDepart, updateDepart, deleteDepart } from '../services/dept';
+import {
+  getDepartTree,
+  addDepart,
+  updateDepart,
+  deleteDepart,
+  listDepartMembers,
+} from '../services/dept';
 import { getKeys } from '@/utils/utils';
 
 export default {
@@ -11,6 +17,7 @@ export default {
     departTree: [],
     openKeys: [],
     selectedKeys: [],
+    members: [],
   },
   effects: {
     // 添加部门
@@ -30,6 +37,8 @@ export default {
       if (net(response)) {
         // 获取openKeys selectedKeys
         const { openKeys, selectedKeys } = getKeys(response.data);
+        // 部门成员列表
+        yield put(createAction('listDepartMembers')({ departId: selectedKeys }));
         // 结果保存
         yield put(
           createAction('updateState')({
@@ -61,6 +70,14 @@ export default {
         yield put(createAction('getDepartTree')());
         // 删除成功
         message.success(response.msg);
+      }
+    },
+    // 部门成员列表
+    *listDepartMembers({ payload, callback }, { call, put }) {
+      const response = yield call(listDepartMembers, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ members: response.data }));
+        callback && callback();
       }
     },
   },

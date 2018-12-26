@@ -38,15 +38,12 @@ export default class BindDeptPage extends Component {
   };
   // 部门选择
   _onDepartSelect = (checkedKeys, e) => {
-    // console.log(checkedKeys);
-
     this.setState({ checkedKeys });
   };
   // 渲染
   render() {
     const { checkedKeys } = this.state;
     const { visible, onCancel, departTrees } = this.props;
-
     return (
       <Modal
         destroyOnClose
