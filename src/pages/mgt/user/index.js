@@ -42,7 +42,12 @@ const confirm = Modal.confirm;
 export default class UserMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { bindRoleVisible: false, selectedRows: [], userRecord: null };
+    this.state = {
+      bindRoleVisible: false,
+      bindDepartVisible: false,
+      selectedRows: [],
+      userRecord: null,
+    };
   }
   // 加载完成
   componentDidMount() {
@@ -110,7 +115,7 @@ export default class UserMgtPage extends Component {
         break;
       // 绑定部门
       case 'bindDept':
-        this.BindDeptPage.show();
+        this.setState({ bindDepartVisible: true });
         break;
       // 重置密码
       case 'reset':
@@ -197,10 +202,27 @@ export default class UserMgtPage extends Component {
       })
     );
   };
-
+  // 绑定角色
+  _handleBindDepart = fields => {
+    const { dispatch } = this.props;
+    const { userRecord } = this.state;
+    dispatch(
+      createActions('user/bindDepart')({
+        userId: userRecord.id,
+        departIds: fields,
+      })(() => {
+        // 关闭弹窗
+        this._onBinDepartCancel();
+      })
+    );
+  };
   // 关闭角色绑定窗口
   _onBinRoleCancel = () => {
     this.setState({ bindRoleVisible: false });
+  };
+  // 关闭部门绑定窗口
+  _onBinDepartCancel = () => {
+    this.setState({ bindDepartVisible: false });
   };
   // 删除用户
   _deleteUser = item => {
@@ -246,7 +268,7 @@ export default class UserMgtPage extends Component {
     });
   };
   render() {
-    const { selectedRows, userRecord, bindRoleVisible } = this.state;
+    const { selectedRows, userRecord, bindRoleVisible, bindDepartVisible } = this.state;
     const { userList, userLoading, roles, keys } = this.props;
     return (
       <div>
@@ -293,7 +315,14 @@ export default class UserMgtPage extends Component {
           />
         )}
         {/* 绑定部门 */}
-        <BindDeptPage ref={ref => (this.BindDeptPage = ref)} />
+        {bindDepartVisible && (
+          <BindDeptPage
+            visible={bindDepartVisible}
+            record={userRecord}
+            handleAdd={this._handleBindDepart}
+            onCancel={this._onBinDepartCancel}
+          />
+        )}
       </div>
     );
   }

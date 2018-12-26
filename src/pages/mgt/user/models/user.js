@@ -10,6 +10,8 @@ import {
   deleteUser,
   updateUser,
   batchDeleteUser,
+  treeBindDepart,
+  bindDepart,
 } from '../services/user';
 
 export default {
@@ -20,6 +22,8 @@ export default {
     pagination: {},
     keys: [],
     roles: [],
+    departTrees: [],
+    departKeys: [],
   },
 
   effects: {
@@ -91,6 +95,29 @@ export default {
         // 获取用户分页
         yield put(createAction('getUserPage')());
         // 更新成功
+        message.success(response.msg);
+      }
+    },
+    // 获取绑定树形部门
+    *treeBindDepart({ payload, callback }, { call, put }) {
+      const response = yield call(treeBindDepart, payload);
+      if (net(response)) {
+        yield put(
+          createAction('updateState')({
+            departKeys: response.data.keys,
+            departTrees: response.data.trees,
+          })
+        );
+        // 返回成功
+        callback && callback();
+      }
+    },
+    // 绑定部门
+    *bindDepart({ payload, callback }, { call, put }) {
+      const response = yield call(bindDepart, payload);
+      if (net(response)) {
+        callback && callback();
+        // 添加成功
         message.success(response.msg);
       }
     },

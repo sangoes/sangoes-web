@@ -62,3 +62,19 @@ export async function batchDeleteUser(params) {
     body: params,
   });
 }
+
+/**
+ * 获取绑定部门树形
+ * @param {参数} params
+ */
+export async function treeBindDepart(params) {
+  return request(`/api/admin/user/bind/depart/${params}`);
+}
+
+/**
+ * 绑定部门
+ * @param  params
+ */
+export async function bindDepart(params) {
+  return request('/api/admin/user/bind/depart', { method: 'POST', body: params });
+}
