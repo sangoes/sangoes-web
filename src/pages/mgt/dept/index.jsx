@@ -277,7 +277,7 @@ export default class DeptMgtPage extends Component {
                     data={members}
                     columns={this.columns}
                     onSelectRow={this._handleSelectRows}
-                    // onChange={this._handleStandardTableChange}
+                    onChange={this._handleStandardTableChange}
                   />
                 </Skeleton>
               </div>
