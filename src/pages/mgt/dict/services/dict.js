@@ -38,3 +38,10 @@ export async function batchDeleteDict(params) {
     body: params,
   });
 }
+/**
+ * 获取字典树形
+ * @param {参数} params
+ */
+export async function dictTree(params) {
+  return request(`/api/admin/dict/tree/${params}`);
+}

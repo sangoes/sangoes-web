@@ -18,7 +18,12 @@ export default class DictMgtPage extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { selectedRows: [], newDictVisible: false, checkDictVisible: false };
+    this.state = {
+      selectedRows: [],
+      newDictVisible: false,
+      checkDictVisible: false,
+      dictItem: null,
+    };
   }
   componentDidMount = () => {
     // 获取字典分页
@@ -136,6 +141,8 @@ export default class DictMgtPage extends Component {
 
   // 查看字典
   _checkDict = item => {
+    //
+    this.setState({ dictItem: item });
     // 展示查看字典
     this._toggleCheckDictPage(true);
   };
@@ -170,7 +177,7 @@ export default class DictMgtPage extends Component {
   };
   render() {
     const { dictPage, dictLoading } = this.props;
-    const { selectedRows, newDictVisible, checkDictVisible } = this.state;
+    const { selectedRows, newDictVisible, checkDictVisible, dictItem } = this.state;
     return (
       <div>
         <BaseLayout title="字典管理">
@@ -210,6 +217,7 @@ export default class DictMgtPage extends Component {
         {checkDictVisible && (
           <CheckDictPage
             visible={checkDictVisible}
+            dictItem={dictItem}
             onCancel={this._onCheckDictCancel}
             onOkHandle={this._handleCheckAddDict}
           />

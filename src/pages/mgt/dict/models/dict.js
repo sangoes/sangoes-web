@@ -2,13 +2,17 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addDict, pageDict, batchDeleteDict, deleteDict } from '../services/dict';
+import { addDict, pageDict, batchDeleteDict, deleteDict, dictTree } from '../services/dict';
 
 export default {
   namespace: 'dict',
   state: {
     // 字典分页结果
     dictPage: {},
+    // 字典树形
+    dictTree: [],
+    // 字典主键
+    dictId: '-1',
   },
   effects: {
     // 添加字典
@@ -48,6 +52,29 @@ export default {
         // 获取字典分页
         yield put(createAction('pageDict')());
         // 删除成功
+        message.success(response.msg);
+      }
+    },
+    // 字典树形
+    *dictTree({ payload, callback }, { call, put }) {
+      const response = yield call(dictTree, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ dictTree: response.data, dictId: payload }));
+        callback && callback();
+      }
+    },
+    // 添加子字典
+    *addSubDict({ payload, callback }, { call, put, select }) {
+      const response = yield call(addDict, payload);
+      if (net(response)) {
+        // 获取字典id
+        const dictId = yield select(state => state.dict.dictId);
+        console.log(dictId);
+
+        // 字典树形
+        yield put(createAction('dictTree')(dictId));
+        callback && callback();
+        // 添加成功
         message.success(response.msg);
       }
     },
