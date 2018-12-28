@@ -4,11 +4,11 @@ import StandardTable from '@/components/StandardTable';
 import moment from 'moment';
 import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
-import { Modal, Button, Form, Divider } from 'antd';
+import { Modal, Button, Form, Divider, Dropdown, Menu, Icon } from 'antd';
 import BaseLayout from '@/components/BaseLayout';
 import NewDictPage from './new';
+import CheckDictPage from './check';
 
-const confirm = Modal.confirm;
 /**
  * 字典管理
  */
@@ -18,11 +18,15 @@ export default class DictMgtPage extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { selectedRows: [], newDictVisible: false };
+    this.state = { selectedRows: [], newDictVisible: false, checkDictVisible: false };
   }
   componentDidMount = () => {
     // 获取字典分页
     this._getDictPageFromNet();
+  };
+  // 隐藏/显示字典展示页
+  _toggleCheckDictPage = val => {
+    this.setState({ checkDictVisible: val });
   };
   // 网络获取字典分页
   _getDictPageFromNet = params => {
@@ -45,9 +49,15 @@ export default class DictMgtPage extends Component {
       })
     );
   };
+  // 查看字典确认
+  _handleCheckAddDict = fields => {};
   // 新建字典取消
   _onNewDictCancel = () => {
     this.setState({ newDictVisible: false });
+  };
+  // 查看字典取消
+  _onCheckDictCancel = () => {
+    this._toggleCheckDictPage(false);
   };
   // table列表
   columns = [
@@ -75,7 +85,60 @@ export default class DictMgtPage extends Component {
       sorter: true,
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <Button size="small" type="danger" ghost onClick={() => this._deleteDict(record)}>
+            删除
+          </Button>
+          <Divider type="vertical" />
+          <Button size="small" onClick={() => this._checkDict(record)}>
+            查看
+          </Button>
+        </Fragment>
+      ),
+    },
   ];
+  // 删除字典
+  _deleteDict = item => {
+    const { dispatch } = this.props;
+    Modal.confirm({
+      title: '确定删除字典?',
+      content: '一旦删除将不可恢复',
+      onOk() {
+        dispatch(createAction('dict/deleteDict')({ dictId: item.id }));
+      },
+    });
+  };
+  // 批量删除字典
+  _onBatchDeleteDictClick = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length === 0) return;
+    Modal.confirm({
+      title: '确定批量删除字典?',
+      content: '一旦删除将不可恢复',
+      onOk: () => this._batchDeleteDictNet(selectedRows),
+    });
+  };
+  // 批量删除字典网络
+  _batchDeleteDictNet = selectedRows => {
+    const { dispatch } = this.props;
+    const keys = selectedRows.map(item => {
+      return item.id;
+    });
+    dispatch(
+      createActions('dict/batchDeleteDict')({ dictIds: keys })(() => {
+        this.setState({ selectedRows: [] });
+      })
+    );
+  };
+
+  // 查看字典
+  _checkDict = item => {
+    // 展示查看字典
+    this._toggleCheckDictPage(true);
+  };
   // 选择
   _handleSelectRows = rows => {
     this.setState({
@@ -107,7 +170,7 @@ export default class DictMgtPage extends Component {
   };
   render() {
     const { dictPage, dictLoading } = this.props;
-    const { selectedRows, newDictVisible } = this.state;
+    const { selectedRows, newDictVisible, checkDictVisible } = this.state;
     return (
       <div>
         <BaseLayout title="字典管理">
@@ -118,7 +181,7 @@ export default class DictMgtPage extends Component {
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button type="danger" ghost onClick={this._onBatchDeleteUserClick}>
+                  <Button type="danger" ghost onClick={this._onBatchDeleteDictClick}>
                     批量删除
                   </Button>
                 </span>
@@ -141,6 +204,14 @@ export default class DictMgtPage extends Component {
             visible={newDictVisible}
             onOkHandle={this._handleAddDict}
             onCancel={this._onNewDictCancel}
+          />
+        )}
+        {/* 查看字典 */}
+        {checkDictVisible && (
+          <CheckDictPage
+            visible={checkDictVisible}
+            onCancel={this._onCheckDictCancel}
+            onOkHandle={this._handleCheckAddDict}
           />
         )}
       </div>

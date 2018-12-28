@@ -112,7 +112,7 @@ export default {
         message.success(response.msg);
       }
     },
-    // 批量删除角色
+    // 更新角色
     *updateRole({ payload, callback }, { call, put }) {
       const response = yield call(updateRole, payload);
       if (net(response)) {

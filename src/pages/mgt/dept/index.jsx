@@ -179,23 +179,23 @@ export default class DeptMgtPage extends Component {
       sorter: true,
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
-    {
-      title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <Button
-            size="small"
-            type="danger"
-            ghost
-            onClick={() => {
-              this._deleteUser(record);
-            }}
-          >
-            删除
-          </Button>
-        </Fragment>
-      ),
-    },
+    // {
+    //   title: '操作',
+    //   render: (text, record) => (
+    //     <Fragment>
+    //       <Button
+    //         size="small"
+    //         type="danger"
+    //         ghost
+    //         onClick={() => {
+    //           this._deleteUser(record);
+    //         }}
+    //       >
+    //         删除
+    //       </Button>
+    //     </Fragment>
+    //   ),
+    // },
   ];
   // 选择
   _handleSelectRows = rows => {

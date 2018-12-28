@@ -96,7 +96,7 @@ export default class GlobalHeaderRight extends PureComponent {
         <Tooltip title={formatMessage({ id: 'component.globalHeader.help' })}>
           <a
             target="_blank"
-            href="https://github.com/sangoes"
+            href="http://sangoes.com"
             rel="noopener noreferrer"
             className={styles.action}
           >

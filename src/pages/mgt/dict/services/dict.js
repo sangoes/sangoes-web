@@ -16,3 +16,25 @@ export async function addDict(params) {
 export async function pageDict(params) {
   return request(`/api/admin/dict/page?${stringify(params)}`);
 }
+
+/**
+ * 删除字典
+ * @param  params
+ */
+export async function deleteDict(params) {
+  return request('/api/admin/dict/delete', {
+    method: 'DELETE',
+    body: params,
+  });
+}
+
+/**
+ * 批量删除字典
+ * @param  params
+ */
+export async function batchDeleteDict(params) {
+  return request('/api/admin/dict/batch/delete', {
+    method: 'DELETE',
+    body: params,
+  });
+}

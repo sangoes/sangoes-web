@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addDict, pageDict } from '../services/dict';
+import { addDict, pageDict, batchDeleteDict, deleteDict } from '../services/dict';
 
 export default {
   namespace: 'dict',
@@ -27,6 +27,28 @@ export default {
       const response = yield call(pageDict, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ dictPage: response.data }));
+      }
+    },
+    // 删除字典
+    *deleteDict({ payload, callback }, { call, put }) {
+      const response = yield call(deleteDict, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取字典分页
+        yield put(createAction('pageDict')());
+        // 删除成功
+        message.success(response.msg);
+      }
+    },
+    // 批量删除字典
+    *batchDeleteDict({ payload, callback }, { call, put }) {
+      const response = yield call(batchDeleteDict, payload);
+      if (net(response)) {
+        callback && callback();
+        // 获取字典分页
+        yield put(createAction('pageDict')());
+        // 删除成功
+        message.success(response.msg);
       }
     },
   },
