@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Icon, Dropdown } from 'antd';
+import { Menu, Icon, Dropdown, Spin } from 'antd';
 import styles from './index.less';
 import Link from 'umi/link';
 import router from 'umi/router';
@@ -83,7 +83,16 @@ export default class BaseMenu extends Component {
     );
   };
   render() {
-    const { menuData, onSelect, openKeys, selectedKeys, theme, location, style } = this.props;
+    const {
+      menuData,
+      onSelect,
+      openKeys,
+      selectedKeys,
+      theme,
+      location,
+      style,
+      loading,
+    } = this.props;
     let keys = [];
     if (location) {
       keys = getMenusSelectKeys(menuData, location.pathname);
@@ -93,18 +102,20 @@ export default class BaseMenu extends Component {
     }
     return (
       <div>
-        <Menu
-          mode="inline"
-          theme={theme || 'dark'}
-          selectedKeys={
-            keys // defaultSelectedKeys={selectedKeys}
-          }
-          defaultOpenKeys={openKeys}
-          style={style || { minHeight: '100vh' }}
-          onSelect={onSelect}
-        >
-          {this.getNavMenuItems(menuData)}
-        </Menu>
+        <Spin spinning={loading}>
+          <Menu
+            mode="inline"
+            theme={theme || 'dark'}
+            selectedKeys={
+              keys // defaultSelectedKeys={selectedKeys}
+            }
+            defaultOpenKeys={openKeys}
+            style={style || { minHeight: '100vh' }}
+            onSelect={onSelect}
+          >
+            {this.getNavMenuItems(menuData)}
+          </Menu>
+        </Spin>
       </div>
     );
   }

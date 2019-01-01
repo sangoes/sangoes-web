@@ -13,9 +13,10 @@ import router from 'umi/router';
 const { Header, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
 
-@connect(({ app, routing }) => ({
+@connect(({ app, routing, loading }) => ({
   ...app,
   ...routing,
+  menuLoading: loading.effects['app/getUserMenu'],
 }))
 export default class BasicLayout extends React.PureComponent {
   constructor(props) {
@@ -66,7 +67,7 @@ export default class BasicLayout extends React.PureComponent {
     }
   };
   render() {
-    const { menuTree, userInfo, location } = this.props;
+    const { menuTree, userInfo, location, menuLoading } = this.props;
     const { openKeys, selectedKeys } = this.state;
     return (
       <Layout style={{ minHeight: '100vh' }}>
@@ -80,6 +81,7 @@ export default class BasicLayout extends React.PureComponent {
           </div>
           {/* 菜单 */}
           <BaseMenu
+            loading={menuLoading}
             link={true}
             menuData={menuTree}
             location={location}
