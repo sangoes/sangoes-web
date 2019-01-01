@@ -45,3 +45,14 @@ export async function batchDeleteDict(params) {
 export async function dictTree(params) {
   return request(`/api/admin/dict/tree/${params}`);
 }
+
+/**
+ * 更新字典
+ * @param  params
+ */
+export async function updateDict(params) {
+  return request('/api/admin/dict/update', {
+    method: 'PUT',
+    body: params,
+  });
+}

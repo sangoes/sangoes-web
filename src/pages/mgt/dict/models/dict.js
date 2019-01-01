@@ -2,7 +2,14 @@ import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
-import { addDict, pageDict, batchDeleteDict, deleteDict, dictTree } from '../services/dict';
+import {
+  addDict,
+  pageDict,
+  batchDeleteDict,
+  deleteDict,
+  dictTree,
+  updateDict,
+} from '../services/dict';
 
 export default {
   namespace: 'dict',
@@ -26,6 +33,21 @@ export default {
         message.success(response.msg);
       }
     },
+    // 更新字典
+    *updateDict({ payload, callback }, { call, put, select }) {
+      const response = yield call(updateDict, payload);
+      if (net(response)) {
+        // 获取字典id
+        const dictId = yield select(state => state.dict.dictId);
+        // 获取树形
+        payload.subDict && (yield put(createAction('dictTree')(dictId)));
+        // 字典分页
+        yield put(createAction('pageDict')());
+        callback && callback();
+        // 添加成功
+        message.success(response.msg);
+      }
+    },
     // 字典分页
     *pageDict({ payload, callback }, { call, put }) {
       const response = yield call(pageDict, payload);
@@ -34,12 +56,16 @@ export default {
       }
     },
     // 删除字典
-    *deleteDict({ payload, callback }, { call, put }) {
+    *deleteDict({ payload, callback }, { call, put, select }) {
       const response = yield call(deleteDict, payload);
       if (net(response)) {
         callback && callback();
+        // 获取字典id
+        const dictId = yield select(state => state.dict.dictId);
         // 获取字典分页
         yield put(createAction('pageDict')());
+        // 获取字典树形
+        yield put(createAction('dictTree')(dictId));
         // 删除成功
         message.success(response.msg);
       }
@@ -69,8 +95,6 @@ export default {
       if (net(response)) {
         // 获取字典id
         const dictId = yield select(state => state.dict.dictId);
-        console.log(dictId);
-
         // 字典树形
         yield put(createAction('dictTree')(dictId));
         callback && callback();

@@ -37,6 +37,7 @@ export default class CheckDictPage extends Component {
       selectedKeys: [],
       dictItem: null,
       editable: true,
+      addable: false,
     };
   }
 
@@ -54,7 +55,10 @@ export default class CheckDictPage extends Component {
     );
   };
   // 确定
-  _onOkHandle = () => {};
+  _onOkHandle = () => {
+    const { onOkHandle } = this.props;
+    onOkHandle && onOkHandle();
+  };
   // 处理字典按钮
   _handleDictMenuClick = e => {
     const { dispatch, dictTree } = this.props;
@@ -63,22 +67,11 @@ export default class CheckDictPage extends Component {
     switch (e.key) {
       // 添加字典
       case 'add':
-        this.setState({ dictItem: null, editable: false });
+        this.setState({ dictItem: null, editable: false, addable: true });
         break;
       // 删除部门
       case 'delete':
-        // 对话框
-        confirm({
-          title: '确认删除部门?',
-          content: '一旦删除将不可恢复',
-          onOk() {
-            dispatch(
-              createAction('dept/deleteDepart')({
-                departId: departId || selectedKeys[0],
-              })
-            );
-          },
-        });
+        this._onDeleteDict();
         break;
       default:
         break;
@@ -104,10 +97,8 @@ export default class CheckDictPage extends Component {
     const { dictTree } = this.props;
     // 查询item
     const dictItem = getTreeItem(dictTree, selectedKeys.join());
-    console.log(dictItem);
-
     // state
-    this.setState({ selectedKeys, dictItem });
+    this.setState({ selectedKeys, dictItem, editable: true, addable: false });
   };
   // 渲染父级字典
   _renderDictSelect() {
@@ -136,6 +127,7 @@ export default class CheckDictPage extends Component {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      fieldsValue.subDict = true;
       const { dispatch, form } = this.props;
       dispatch(
         createActions('dict/addSubDict')(fieldsValue)(() => {
@@ -145,10 +137,49 @@ export default class CheckDictPage extends Component {
       );
     });
   };
+  // 更新
+  _onUpdateClick = () => {
+    const { dispatch, form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      fieldsValue.subDict = true;
+      const { dispatch, form } = this.props;
+      dispatch(
+        createActions('dict/updateDict')(fieldsValue)(() => {
+          // 编辑
+          this.setState({ editable: true });
+        })
+      );
+    });
+  };
+  // 删除
+  _onDeleteDict = e => {
+    // 对话框
+    Modal.confirm({
+      title: '确认删除字典?',
+      content: '一旦删除将不可恢复',
+      onOk: () => this._onDeleteDictNet(),
+    });
+  };
+  // 删除字典网络
+  _onDeleteDictNet = () => {
+    const { dispatch } = this.props;
+    const { dictItem } = this.state;
+    dispatch(
+      createActions('dict/deleteDict')({ dictId: dictItem.id })(() => {
+        const { dictTree } = this.props;
+        this.setState({
+          selectedKeys: dictTree.length > 0 ? [dictTree[0].id] : '',
+          dictItem: dictTree[0],
+        });
+        console.log(this.state.selectedKeys);
+      })
+    );
+  };
   // 渲染
   render() {
     const { onCancel, visible, dictTree, form, dictTreeLoading } = this.props;
-    const { selectedKeys, dictItem, editable } = this.state;
+    const { selectedKeys, dictItem, editable, addable } = this.state;
     return (
       <Modal
         width="50%"
@@ -162,6 +193,20 @@ export default class CheckDictPage extends Component {
           {/* 显示 */}
           <Col span={16} push={8}>
             <div className={styles.show}>
+              {/* 隐藏id */}
+              {dictItem && (
+                <FormItem
+                  labelCol={{ span: 5 }}
+                  wrapperCol={{ span: 15 }}
+                  label="主键"
+                  style={{ display: 'none' }}
+                >
+                  {form.getFieldDecorator('id', {
+                    initialValue: dictItem && dictItem.id,
+                    rules: [{ required: true }],
+                  })(<Input placeholder="主键" disabled style={{ display: 'none' }} />)}
+                </FormItem>
+              )}
               {/* 父级字典 */}
               <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="父级字典">
                 {form.getFieldDecorator('parentId', {
@@ -217,14 +262,18 @@ export default class CheckDictPage extends Component {
                   <Col style={{ marginRight: 20 }}>
                     {editable ? (
                       <Button onClick={this._onEditClick}>编辑</Button>
-                    ) : (
+                    ) : addable ? (
                       <Button type="primary" onClick={this._onSaveClick}>
                         确定
+                      </Button>
+                    ) : (
+                      <Button type="primary" onClick={this._onUpdateClick}>
+                        更新
                       </Button>
                     )}
                   </Col>
                   <Col>
-                    <Button type="danger" ghost>
+                    <Button type="danger" ghost onClick={this._onDeleteDict}>
                       删除
                     </Button>
                   </Col>

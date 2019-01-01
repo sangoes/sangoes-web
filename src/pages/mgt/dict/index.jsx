@@ -55,7 +55,9 @@ export default class DictMgtPage extends Component {
     );
   };
   // 查看字典确认
-  _handleCheckAddDict = fields => {};
+  _handleCheckAddDict = fields => {
+    this.setState({ checkDictVisible: false });
+  };
   // 新建字典取消
   _onNewDictCancel = () => {
     this.setState({ newDictVisible: false });
