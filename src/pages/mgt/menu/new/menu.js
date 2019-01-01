@@ -46,7 +46,7 @@ export default class NewMenuPage extends Component {
     const parentItem = menus.find(itemVal => {
       return itemVal.id === item.parentId;
     });
-    return parentItem;
+    return parentItem || item;
   }
   // 确认
   _onOkHandle() {

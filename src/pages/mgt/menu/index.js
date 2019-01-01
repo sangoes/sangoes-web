@@ -35,6 +35,7 @@ const confirm = Modal.confirm;
   ...auth,
   ...routing,
   authLoading: loading.models.auth,
+  menuLoading: loading.effects['menu/getMenuTree'],
 }))
 @Form.create()
 export default class MenuMgtPage extends Component {
@@ -307,7 +308,7 @@ export default class MenuMgtPage extends Component {
   };
 
   render() {
-    const { menuTree, menuList, form, authList, authLoading, location } = this.props;
+    const { menuTree, menuList, form, authList, authLoading, location, menuLoading } = this.props;
     const { selectedRows, selectedKeys, openKeys } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={['add']}>
@@ -336,6 +337,7 @@ export default class MenuMgtPage extends Component {
               {/* 菜单 */}
               <BaseMenu
                 theme="light"
+                loading={menuLoading}
                 link={false}
                 menuData={menuTree}
                 openKeys={openKeys}
