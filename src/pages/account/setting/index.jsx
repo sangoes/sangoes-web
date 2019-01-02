@@ -46,6 +46,7 @@ export default class SettingPage extends Component {
             <BaseMenu
               style={{ minHeight: '100%' }}
               theme="light"
+              loading={false}
               link={false}
               selectedKeys={selectedKeys}
               menuData={this._menuSider}
