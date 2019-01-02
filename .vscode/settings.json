@@ -1,5 +1,6 @@
 {
   "files.exclude": {
+    ".vscode": true,
     "node_modules": true,
     "npm-debug.log*": true,
     "yarn-error.log": true,
@@ -9,7 +10,6 @@
     "**/.DS_Store": true,
     "**/.umi": true,
     "**/.umi-production": true,
-    ".vscode": true,
     "**/.vsocde": true,
     "**/.idea": true
   },

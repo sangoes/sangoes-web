@@ -18,6 +18,7 @@
    * react.js
    * umijs
    * antd
+   * braft-editor
 
 ## 相关
     
@@ -63,5 +64,8 @@
 
 ## 感谢
 
-    umijs:https://github.com/umijs/umi
-    antd:https://github.com/ant-design/ant-design
+[umijs](https://github.com/umijs/umi)
+
+[antd](https://github.com/ant-design/ant-design)
+
+[braft-editor](https://github.com/margox/braft-editor)
