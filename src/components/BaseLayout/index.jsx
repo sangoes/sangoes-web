@@ -9,8 +9,7 @@ const { Content } = Layout;
  * 基础布局
  */
 export default class BaseLayout extends PureComponent {
-  static propTypes = { title: PropTypes.string };
-
+  // 渲染
   render() {
     const { title, children } = this.props;
     return (
@@ -23,3 +22,9 @@ export default class BaseLayout extends PureComponent {
     );
   }
 }
+BaseLayout.propTypes = {
+  title: PropTypes.string,
+};
+BaseLayout.defaultProps = {
+  title: 'BaseLayout',
+};

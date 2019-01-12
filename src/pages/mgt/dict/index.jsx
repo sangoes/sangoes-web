@@ -10,7 +10,12 @@ import NewDictPage from './new';
 import CheckDictPage from './check';
 
 /**
- * 字典管理
+ * @description 字典管理
+ * @author jerrychir
+ * @date 2019-01-10
+ * @export
+ * @class DictMgtPage
+ * @extends {Component}
  */
 @connect(({ dict, loading }) => ({ ...dict, dictLoading: loading.effects['dict/pageDict'] }))
 @Form.create()
@@ -29,7 +34,11 @@ export default class DictMgtPage extends Component {
     // 获取字典分页
     this._getDictPageFromNet();
   };
-  // 隐藏/显示字典展示页
+
+  /**
+   * @description 隐藏/显示字典展示页
+   * @memberof DictMgtPage
+   */
   _toggleCheckDictPage = val => {
     this.setState({ checkDictVisible: val });
   };
