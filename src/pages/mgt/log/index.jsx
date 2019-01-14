@@ -36,6 +36,10 @@ export default class LogMgtPage extends PureComponent {
   // table列表
   columns = [
     {
+      title: '方法名',
+      dataIndex: 'title',
+    },
+    {
       title: '请求方法',
       dataIndex: 'method',
     },
@@ -47,10 +51,17 @@ export default class LogMgtPage extends PureComponent {
       title: '请求URI',
       dataIndex: 'uri',
     },
-
+    {
+      title: '参数',
+      dataIndex: 'params',
+    },
+    {
+      title: '耗时(ms)',
+      dataIndex: 'elapsed',
+    },
     {
       title: '请求用户',
-      dataIndex: 'userName',
+      dataIndex: 'creator',
     },
     {
       title: '请求状态',

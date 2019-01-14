@@ -64,3 +64,7 @@ export async function logout() {
     },
   });
 }
+
+// export async function getUrl(params) {
+//   return request('/api/admin/user/info');
+// }

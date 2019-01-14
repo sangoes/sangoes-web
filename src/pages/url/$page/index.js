@@ -21,6 +21,7 @@ export default class url extends Component {
       <div>
         <PageHeader title={item && item.name} />
         <iframe style={{ border: 0, width: '100%', height: '100vh' }} src={item && item.url} />
+        {/* <div dangerouslySetInnerHTML={{ __html: item && item.url }} /> */}
       </div>
     );
   }
