@@ -6,6 +6,7 @@ import StandardTable from '@/components/StandardTable';
 import { createAction } from '@/utils';
 import moment from 'moment';
 import { Button, Form, Row, Col, Icon, Input, Select } from 'antd';
+import CheckLogPage from './check';
 
 const FormItem = Form.Item;
 /**
@@ -21,7 +22,7 @@ export default class LogMgtPage extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = { expandForm: false, selectedRows: [] };
+    this.state = { expandForm: false, selectedRows: [], checkLogVisible: false, logItem: null };
   }
 
   // 渲染完成
@@ -38,6 +39,11 @@ export default class LogMgtPage extends PureComponent {
     {
       title: '方法名',
       dataIndex: 'title',
+      render: (text, record) => (
+        <a href="javascript:;" onClick={() => this._onShowCheckLog(record)}>
+          {text}
+        </a>
+      ),
     },
     {
       title: '请求方法',
@@ -47,14 +53,16 @@ export default class LogMgtPage extends PureComponent {
       title: '请求IP',
       dataIndex: 'remote',
     },
-    {
-      title: '请求URI',
-      dataIndex: 'uri',
-    },
-    {
-      title: '参数',
-      dataIndex: 'params',
-    },
+    // {
+    //   title: '请求URI',
+    //   width: 100,
+    //   dataIndex: 'uri',
+    //   // className: styles.urlText,
+    // },
+    // {
+    //   title: '参数',
+    //   dataIndex: 'params',
+    // },
     {
       title: '耗时(ms)',
       dataIndex: 'elapsed',
@@ -144,9 +152,18 @@ export default class LogMgtPage extends PureComponent {
     const { expandForm } = this.state;
     return this._renderSimpleForm();
   }
+  // close log check关闭查看日志详情
+  _onCloseCheckLog = () => {
+    this.setState({ checkLogVisible: false });
+  };
+  // 显示日志详情
+  _onShowCheckLog = item => {
+    this.setState({ checkLogVisible: true, logItem: item });
+  };
+
   // 渲染
   render() {
-    const { selectedRows } = this.state;
+    const { selectedRows, checkLogVisible, logItem } = this.state;
     const { logLoading, logList } = this.props;
     return (
       <BaseLayout title={'日志管理'}>
@@ -162,6 +179,14 @@ export default class LogMgtPage extends PureComponent {
             onSelectRow={this._handleSelectRows}
             onChange={this._handleStandardTableChange}
           />
+          {/* 查看日志 */}
+          {checkLogVisible && (
+            <CheckLogPage
+              visible={checkLogVisible}
+              onClose={this._onCloseCheckLog}
+              item={logItem}
+            />
+          )}
         </div>
       </BaseLayout>
     );
