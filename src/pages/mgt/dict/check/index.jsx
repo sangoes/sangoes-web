@@ -172,7 +172,6 @@ export default class CheckDictPage extends Component {
           selectedKeys: dictTree.length > 0 ? [dictTree[0].id] : '',
           dictItem: dictTree[0],
         });
-        console.log(this.state.selectedKeys);
       })
     );
   };

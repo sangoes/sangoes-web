@@ -65,6 +65,18 @@ export async function logout() {
   });
 }
 
-// export async function getUrl(params) {
-//   return request('/api/admin/user/info');
-// }
+/**
+ * 根据dictKey获取字典树形
+ * @param {dictKey} params
+ */
+export async function treeDict(params) {
+  return request(`/api/admin/dict/one/tree/${params}`);
+}
+
+/**
+ * 根据dictKey获取字典列表
+ * @param {dictKey} params
+ */
+export async function listDict(params) {
+  return request(`/api/admin/dict/one/list/${params}`);
+}

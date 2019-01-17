@@ -7,6 +7,8 @@ import {
   getUserMenu,
   getUserInfo,
   logout,
+  treeDict,
+  listDict,
 } from '../services/app';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
@@ -24,6 +26,10 @@ export default {
     menuTree: [],
     openKeys: [],
     selectedKeys: [],
+    // 字典树形(根据dictKey查询)
+    treeDict: [],
+    // 字典列表(根据dictKey查询)
+    listDict: [],
   },
 
   effects: {
@@ -85,6 +91,24 @@ export default {
       const response = yield call(getUserInfo, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ userInfo: response.data }));
+        // 成功返回
+        callback && callback();
+      }
+    },
+    // 根据dictKey获取字典树形
+    *treeDict({ payload, callback }, { call, put }) {
+      const response = yield call(treeDict, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ treeDict: response.data }));
+        // 成功返回
+        callback && callback();
+      }
+    },
+    // 根据dictKey获取字典列表
+    *listDict({ payload, callback }, { call, put }) {
+      const response = yield call(listDict, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ listDict: response.data }));
         // 成功返回
         callback && callback();
       }

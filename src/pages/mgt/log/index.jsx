@@ -7,8 +7,10 @@ import { createAction } from '@/utils';
 import moment from 'moment';
 import { Button, Form, Row, Col, Icon, Input, Select } from 'antd';
 import CheckLogPage from './check';
+import { LOG_FILTER } from '@/constants/dictConstants';
 
 const FormItem = Form.Item;
+const Option = Select.Option;
 /**
  * @description 日志管理
  * @author jerrychir
@@ -17,19 +19,37 @@ const FormItem = Form.Item;
  * @extends {PureComponent}
  */
 @Form.create()
-@connect(({ loading, log }) => ({ ...log, logLoading: loading.effects['log/logPage'] }))
+@connect(({ app, loading, log }) => ({
+  ...app,
+  ...log,
+  logLoading: loading.effects['log/logPage'],
+  dictsLoading: loading.effects['app/listDict'],
+}))
 export default class LogMgtPage extends PureComponent {
   constructor(props) {
     super(props);
-
-    this.state = { expandForm: false, selectedRows: [], checkLogVisible: false, logItem: null };
+    this.state = {
+      expandForm: false,
+      selectedRows: [],
+      checkLogVisible: false,
+      logItem: null,
+      defaultDict: null,
+    };
   }
 
   // 渲染完成
   componentDidMount = () => {
+    // 获取日志筛选选项
+    this.props.dispatch(createAction('app/listDict')(LOG_FILTER));
     // 获取日志分页
     this._getLogPageNet();
   };
+  componentWillReceiveProps = nextProps => {
+    if (nextProps.listDict && nextProps.listDict.length > 0) {
+      this.setState({ defaultDict: nextProps.listDict[0].key });
+    }
+  };
+
   // 获取日志分页
   _getLogPageNet = params => {
     this.props.dispatch(createAction('log/logPage')({ sorter: 'crtTime_descend', ...params }));
@@ -116,22 +136,40 @@ export default class LogMgtPage extends PureComponent {
     this._getLogPageNet(params);
   };
   /**
+   * @description 选择
+   * @memberof LogMgtPage
+   */
+  _onSelectChange = value => {
+    this.setState({ defaultDict: value });
+  };
+  /*
    * 简单搜索
    */
   _renderSimpleForm() {
     const {
       form: { getFieldDecorator },
+      dictsLoading,
+      listDict,
     } = this.props;
+    const { defaultDict } = this.state;
+    // 封装字典
+    const dictData = listDict.map(item => (
+      <Option key={item.key} value={item.key}>
+        {item.value}
+      </Option>
+    ));
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
+        <Row type="flex" className={styles.formSimple}>
+          <Col span={3} order={1}>
+            <Select value={defaultDict} loading={dictsLoading} onChange={this._onSelectChange}>
+              {dictData}
+            </Select>
           </Col>
-
-          <Col md={8} sm={24}>
+          <Col span={6} order={1} className={styles.input}>
+            <FormItem>{getFieldDecorator('name')(<Input placeholder="筛选关键词" />)}</FormItem>
+          </Col>
+          <Col span={6} order={2}>
             <span className={styles.submitButtons}>
               <Button type="primary" htmlType="submit">
                 查询
