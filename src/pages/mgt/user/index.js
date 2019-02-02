@@ -30,7 +30,7 @@ import BindRolePage from './bind';
 import BindDeptPage from './bind/dept';
 
 const confirm = Modal.confirm;
-
+const webSocket = new WebSocket('ws://127.0.0.1:9191/web/msg?id=34567');
 /**
  * 用户管理
  */
@@ -267,9 +267,13 @@ export default class UserMgtPage extends Component {
       },
     });
   };
+
   render() {
     const { selectedRows, userRecord, bindRoleVisible, bindDepartVisible } = this.state;
     const { userList, userLoading, roles, keys } = this.props;
+    // console.log('ws:', msgWS);
+    // msgWS.onopen(() => {});
+
     return (
       <div>
         <PageHeader title="用户管理" />

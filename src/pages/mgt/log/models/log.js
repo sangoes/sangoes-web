@@ -24,5 +24,7 @@ export default {
     },
   },
 
-  subscriptions: {},
+  subscriptions: {
+    setupHistory({ dispatch, history }) {},
+  },
 };

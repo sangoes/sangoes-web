@@ -120,4 +120,5 @@ export default {
       return { ...state, ...payload };
     },
   },
+  subscriptions: {},
 };
