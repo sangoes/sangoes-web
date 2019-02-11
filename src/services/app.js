@@ -80,3 +80,4 @@ export async function treeDict(params) {
 export async function listDict(params) {
   return request(`/api/admin/dict/one/list/${params}`);
 }
+
