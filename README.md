@@ -43,6 +43,7 @@
    * 部门管理:添加部门 编辑部门 删除部门
    * 字典管理:添加字典 添加子字典 删除 编辑
    * 个人中心:
+   * 前端权限 前端按钮资源
    
 ## 待做 TODO
 
@@ -62,6 +63,13 @@
     yarn start UMI_ENV=test
     # prod
     yarn start UMI_ENV=prod
+
+## 使用
+
+  #### 1.前端按钮资源判断
+    
+    import authUtils from '@/utils/authUtils';
+    const dd = authUtils.auth('admin:user:add');
 
 ## 感谢
 

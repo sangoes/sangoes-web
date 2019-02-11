@@ -1,11 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import styles from './index.less';
 import { connect } from 'dva';
+import authUtils from '@/utils/authUtils';
 
 @connect(({ msg }) => ({ ...msg }))
 export default class IndexPage extends Component {
   render() {
     const { wsMsg } = this.props;
+    const dd = authUtils.auth('admin:user:addddd');
+
     return (
       <div className={styles.normal}>
         <div className={styles.welcome} />

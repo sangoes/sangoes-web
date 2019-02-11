@@ -13,6 +13,7 @@ import {
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
 import { getKeys } from '@/utils/utils';
+import { AUTH } from '@/constants/storage';
 
 export default {
   namespace: 'app',
@@ -91,6 +92,10 @@ export default {
       const response = yield call(getUserInfo, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ userInfo: response.data }));
+        // TODO 保存在本地
+        if (response.data) {
+          localStorage.setItem(AUTH, stringify(response.data.auth));
+        }
         // 成功返回
         callback && callback();
       }
