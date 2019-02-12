@@ -6,7 +6,7 @@ import { parse } from 'qs';
  * 消息类
  */
 export default {
-  namespace: 'msg',
+  namespace: 'msg1',
 
   state: {
     wsMsg: WebSocket,

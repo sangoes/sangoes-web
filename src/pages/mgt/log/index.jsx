@@ -7,7 +7,7 @@ import { createAction } from '@/utils';
 import moment from 'moment';
 import { Button, Form, Row, Col, Icon, Input, Select } from 'antd';
 import CheckLogPage from './check';
-import { LOG_FILTER } from '@/constants/dictConstants';
+import { LOG_FILTER } from '@/constants/dict';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
