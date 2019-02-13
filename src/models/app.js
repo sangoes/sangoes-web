@@ -1,15 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import {
-  getRegisterCaptcha,
-  getPublicKeyByRandom,
-  getImageCaptcha,
-  getUserMenu,
-  getUserInfo,
-  logout,
-  treeDict,
-  listDict,
-} from '../services/app';
+import * as services from '../services/app';
 import { createAction, net } from '@/utils';
 import { message } from 'antd';
 import { getKeys } from '@/utils/utils';
@@ -35,27 +26,27 @@ export default {
 
   effects: {
     *getRegisterCaptcha({ payload }, { call, put }) {
-      const response = yield call(getRegisterCaptcha, payload);
+      const response = yield call(services.getRegisterCaptcha, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ publicKey: response.data }));
       }
     },
     *getPublicKeyByRandom({ payload }, { call, put }) {
-      const response = yield call(getPublicKeyByRandom, payload);
+      const response = yield call(services.getPublicKeyByRandom, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ publicKey: response.data }));
       }
     },
     // 获取图片验证码
     *getImageCaptcha({ payload }, { call, put }) {
-      const response = yield call(getImageCaptcha, payload);
+      const response = yield call(services.getImageCaptcha, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ imgCaptcha: response }));
       }
     },
     // 退出
     *logout({ payload }, { call, put }) {
-      const response = yield call(logout, payload);
+      const response = yield call(services.logout, payload);
       if (net(response)) {
         // 清空session
         sessionStorage.removeItem('access_token');
@@ -72,7 +63,7 @@ export default {
     },
     // 获取当前用户的菜单树形结果
     *getUserMenu({ payload, callback }, { call, put }) {
-      const response = yield call(getUserMenu, payload);
+      const response = yield call(services.getUserMenu, payload);
       if (net(response)) {
         const { openKeys, selectedKeys } = getKeys(response.data);
         // 保存state
@@ -89,7 +80,7 @@ export default {
     },
     // 获取当前用户信息
     *getUserInfo({ payload, callback }, { call, put }) {
-      const response = yield call(getUserInfo, payload);
+      const response = yield call(services.getUserInfo, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ userInfo: response.data }));
         // TODO 保存在本地
@@ -102,7 +93,7 @@ export default {
     },
     // 根据dictKey获取字典树形
     *treeDict({ payload, callback }, { call, put }) {
-      const response = yield call(treeDict, payload);
+      const response = yield call(services.treeDict, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ treeDict: response.data }));
         // 成功返回
@@ -111,9 +102,20 @@ export default {
     },
     // 根据dictKey获取字典列表
     *listDict({ payload, callback }, { call, put }) {
-      const response = yield call(listDict, payload);
+      const response = yield call(services.listDict, payload);
       if (net(response)) {
         yield put(createAction('updateState')({ listDict: response.data }));
+        // 成功返回
+        callback && callback();
+      }
+    },
+    // 获取通知信息
+    *getMsgNotice({ payload, callback }, { call, put }) {
+      const response = yield call(services.getMsgNotice, payload);
+      if (net(response)) {
+        // yield put(createAction('updateState')({ listDict: response.data }));
+        console.log(response);
+
         // 成功返回
         callback && callback();
       }

@@ -66,6 +66,21 @@ export default class BasicLayout extends React.PureComponent {
         break;
     }
   };
+  /**
+   * @description 点击通知按钮回调
+   * @memberof BasicLayout
+   */
+  _onNoticeVisibleChange = visible => {
+    if (visible) {
+      this.props.dispatch(createAction('app/getMsgNotice')({ type: 1 }));
+    }
+  };
+  /**
+   * @description 渲染
+   * @author jerrychir
+   * @returns
+   * @memberof BasicLayout
+   */
   render() {
     const { menuTree, userInfo, location, menuLoading } = this.props;
     const { openKeys, selectedKeys } = this.state;
@@ -96,6 +111,7 @@ export default class BasicLayout extends React.PureComponent {
             <GlobalHeader
               currentUser={userInfo}
               onMenuClick={this._handleMenuClick}
+              onNoticeVisibleChange={this._onNoticeVisibleChange}
               {...this.props}
             />
           </Header>
