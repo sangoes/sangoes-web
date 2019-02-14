@@ -27,9 +27,10 @@ import NewUserPage from './new';
 import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
 import BindRolePage from './bind';
+import BindDeptPage from './bind/dept';
 
 const confirm = Modal.confirm;
-
+const webSocket = new WebSocket('ws://127.0.0.1:9191/web/msg?id=34567');
 /**
  * 用户管理
  */
@@ -41,7 +42,12 @@ const confirm = Modal.confirm;
 export default class UserMgtPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { bindRoleVisible: false, selectedRows: [], userRecord: null };
+    this.state = {
+      bindRoleVisible: false,
+      bindDepartVisible: false,
+      selectedRows: [],
+      userRecord: null,
+    };
   }
   // 加载完成
   componentDidMount() {
@@ -103,12 +109,15 @@ export default class UserMgtPage extends Component {
         const item = this.state.userRecord;
         this.NewUserPage.showUpdate(item);
         break;
+      // 绑定角色
       case 'bind':
-        // 绑定角色
-        this.setState({
-          bindRoleVisible: true,
-        });
+        this.setState({ bindRoleVisible: true });
         break;
+      // 绑定部门
+      case 'bindDept':
+        this.setState({ bindDepartVisible: true });
+        break;
+      // 重置密码
       case 'reset':
         break;
       default:
@@ -120,6 +129,7 @@ export default class UserMgtPage extends Component {
     <Menu onClick={this._handleMenuClick} selectedKeys={['edit']}>
       <Menu.Item key="edit">修改</Menu.Item>
       <Menu.Item key="bind">绑定角色</Menu.Item>
+      <Menu.Item key="bindDept">绑定部门</Menu.Item>
       <Menu.Item key="reset">重置密码</Menu.Item>
     </Menu>
   );
@@ -192,10 +202,27 @@ export default class UserMgtPage extends Component {
       })
     );
   };
-
+  // 绑定角色
+  _handleBindDepart = fields => {
+    const { dispatch } = this.props;
+    const { userRecord } = this.state;
+    dispatch(
+      createActions('user/bindDepart')({
+        userId: userRecord.id,
+        departIds: fields,
+      })(() => {
+        // 关闭弹窗
+        this._onBinDepartCancel();
+      })
+    );
+  };
   // 关闭角色绑定窗口
   _onBinRoleCancel = () => {
     this.setState({ bindRoleVisible: false });
+  };
+  // 关闭部门绑定窗口
+  _onBinDepartCancel = () => {
+    this.setState({ bindDepartVisible: false });
   };
   // 删除用户
   _deleteUser = item => {
@@ -240,9 +267,13 @@ export default class UserMgtPage extends Component {
       },
     });
   };
+
   render() {
-    const { selectedRows, userRecord, bindRoleVisible } = this.state;
+    const { selectedRows, userRecord, bindRoleVisible, bindDepartVisible } = this.state;
     const { userList, userLoading, roles, keys } = this.props;
+    // console.log('ws:', msgWS);
+    // msgWS.onopen(() => {});
+
     return (
       <div>
         <PageHeader title="用户管理" />
@@ -285,6 +316,15 @@ export default class UserMgtPage extends Component {
             record={userRecord}
             handleAdd={this._handleBindRole}
             onCancel={this._onBinRoleCancel}
+          />
+        )}
+        {/* 绑定部门 */}
+        {bindDepartVisible && (
+          <BindDeptPage
+            visible={bindDepartVisible}
+            record={userRecord}
+            handleAdd={this._handleBindDepart}
+            onCancel={this._onBinDepartCancel}
           />
         )}
       </div>

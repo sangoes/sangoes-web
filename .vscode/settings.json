@@ -1,24 +1,15 @@
 {
   "files.exclude": {
-    "node_modules": true,
-    "npm-debug.log*": true,
-    "yarn-error.log": true,
-    "yarn.lock": true,
-    "package-lock.json": true,
-    "dist": true,
-    "**/.DS_Store": true,
-    "**/.umi": true,
-    "**/.umi-production": true,
-    ".vscode": true,
-    "**/.vsocde": true,
-    "**/.idea": true
+    ".vscode": true
   },
   "cSpell.words": [
     "Dropdown",
     "Nums",
     "Popconfirm",
     "auths",
+    "datetime",
     "jerrychir",
-    "lczpz"
+    "lczpz",
+    "readed"
   ]
 }

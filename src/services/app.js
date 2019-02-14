@@ -57,10 +57,34 @@ export async function getUserInfo(params) {
  * @param
  */
 export async function logout() {
-  return request(`/api/oauth/logout`, {
+  return request(`/api/admin/user/logout`, {
     method: 'DELETE',
     headers: {
       Authorization: 'Basic c2FuZ29lczpzYW5nb2Vz',
     },
   });
+}
+
+/**
+ * 根据dictKey获取字典树形
+ * @param {dictKey} params
+ */
+export async function treeDict(params) {
+  return request(`/api/admin/dict/one/tree/${params}`);
+}
+
+/**
+ * 根据dictKey获取字典列表
+ * @param {dictKey} params
+ */
+export async function listDict(params) {
+  return request(`/api/admin/dict/one/list/${params}`);
+}
+
+/**
+ * 分页获取消息
+ * @param {dictKey} params
+ */
+export async function getMsgNotice(params) {
+  return request(`/api/msg/center/page?${stringify(params)}`);
 }

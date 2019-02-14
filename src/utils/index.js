@@ -17,3 +17,7 @@ export { default as request } from './request';
  * @param {*} response
  */
 export const net = response => response && response.code == 200;
+/**
+ * react 工具
+ */
+export { default as reactUtils } from './reactUtils';

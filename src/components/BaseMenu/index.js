@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Menu, Icon, Dropdown } from 'antd';
+import { Menu, Icon, Dropdown, Spin } from 'antd';
 import styles from './index.less';
 import Link from 'umi/link';
 import router from 'umi/router';
-import { isUrl } from '@/utils/utils';
+import { isUrl, urlToList, getMenusSelectKeys } from '@/utils/utils';
 
 const { SubMenu } = Menu;
 
@@ -51,19 +51,13 @@ export default class BaseMenu extends Component {
         {/* 判断是否为网址 */}
         {link ? (
           isUrl(item.url) ? (
-            // <Link to={'/url/' + item.menuCode}>
-            //   <span>
-            //     {item.icon && <Icon type={item.icon} />}
-            //     <span>{item.name}</span>
-            //   </span>
-            // </Link>
             // 网站跳转
             <span
               onClick={() => {
                 router.push({
                   pathname: '/url/' + item.menuCode,
                   query: {
-                    url: item.url,
+                    item: item,
                   },
                 });
               }}
@@ -88,22 +82,40 @@ export default class BaseMenu extends Component {
       </Menu.Item>
     );
   };
-
   render() {
-    const { menuData, onSelect, openKeys, selectedKeys, theme } = this.props;
+    const {
+      menuData,
+      onSelect,
+      openKeys,
+      selectedKeys,
+      theme,
+      location,
+      style,
+      loading,
+    } = this.props;
+    let keys = [];
+    if (location) {
+      keys = getMenusSelectKeys(menuData, location.pathname);
+    }
+    if (!keys.length) {
+      keys = selectedKeys;
+    }
     return (
       <div>
-        <Menu
-          mode="inline"
-          theme={theme || 'dark'}
-          // defaultSelectedKeys={selectedKeys}
-          selectedKeys={selectedKeys}
-          defaultOpenKeys={openKeys}
-          style={{ minHeight: '100vh' }}
-          onSelect={onSelect}
-        >
-          {this.getNavMenuItems(menuData)}
-        </Menu>
+        <Spin spinning={loading}>
+          <Menu
+            mode="inline"
+            theme={theme || 'dark'}
+            selectedKeys={
+              keys // defaultSelectedKeys={selectedKeys}
+            }
+            defaultOpenKeys={openKeys}
+            style={style || { minHeight: '100vh' }}
+            onSelect={onSelect}
+          >
+            {this.getNavMenuItems(menuData)}
+          </Menu>
+        </Spin>
       </div>
     );
   }

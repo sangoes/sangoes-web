@@ -2,16 +2,17 @@ import moment from 'moment';
 import React from 'react';
 import nzh from 'nzh/cn';
 import { parse, stringify } from 'qs';
+import pathToRegexp from 'path-to-regexp';
 
 /**
  * 获取keys
- * @param {获取keys} menuTree
+ * @param {获取keys} tree
  */
-export function getKeys(menuTree) {
-  if (!(menuTree && menuTree.length > 0)) {
+export function getKeys(tree) {
+  if (!(tree && tree.length > 0)) {
     return { openKeys: [], selectedKeys: [] };
   }
-  const menuItem = menuTree[0];
+  const dataItem = tree[0];
   const openKeys = [];
   let selectedKeys;
   function getKeysItem(item) {
@@ -22,7 +23,7 @@ export function getKeys(menuTree) {
       getKeysItem(item.children[0]);
     }
   }
-  getKeysItem(menuItem);
+  getKeysItem(dataItem);
   return { openKeys: openKeys, selectedKeys: selectedKeys };
 }
 
@@ -294,4 +295,114 @@ export function formatWan(val) {
 
 export function isAntdPro() {
   return window.location.hostname === 'preview.pro.ant.design';
+}
+/**
+ * url To list
+ * @param {地址} url
+ */
+export function urlToList(url) {
+  const urllist = url.split('/').filter(i => i);
+  return urllist.map((urlItem, index) => `/${urllist.slice(0, index + 1).join('/')}`);
+}
+
+export const getMenuMatches = (keys, path) =>
+  keys.filter(item => {
+    if (item) {
+      return pathToRegexp(item).test(path);
+    }
+    return false;
+  });
+
+/**
+ * 获取菜单key
+ * [{path:string},{path:string}] => {path,path2}
+ * @param {菜单} menuData
+ */
+export const getFlatMenuKeys = menuData => {
+  let keys = [];
+  menuData.forEach(item => {
+    keys.push(item.url);
+    if (item.children) {
+      keys = keys.concat(getFlatMenuKeys(item.children));
+    }
+  });
+  return keys;
+};
+
+/**
+ * 将树形变为list
+ * @param {数据} menuData
+ */
+export const flatMenuTree = menuData => {
+  let values = [];
+  menuData.forEach(item => {
+    values.push({ path: item.url, key: item.id });
+    if (item.children) {
+      values = values.concat(flatMenuTree(item.children));
+    }
+  });
+  return values;
+};
+
+/**
+ * 将树形变和路径相同
+ * @param {数据} menuData
+ */
+export const getMenusSelectKeys = (menuData, pathname) => {
+  const menus = flatMenuTree(menuData);
+  return menus.filter(item => item.path === pathname).map(item => item.key);
+};
+
+/**
+ * 获取树形结构key值相同的第一个对象
+ * @param {树形} tree
+ * @param {key} key
+ */
+export function getTreeItem(tree, key) {
+  let element = null;
+  function getTree(data, id) {
+    data.forEach(item => {
+      if (item.id === id) {
+        element = item;
+        return;
+      }
+      if (item.children) {
+        getTree(item.children, id);
+      }
+    });
+  }
+  getTree(tree, key);
+  return element;
+}
+/**
+ * 获取树形key的父节点
+ * @param {树形} tree
+ * @param {指定key} key
+ */
+export function getTreeParentId(tree, key) {
+  let element = null;
+  function getTree(data, id) {
+    data.forEach(item => {
+      if (item.id === id) {
+        element = item.parentId;
+        return;
+      }
+      if (item.children) {
+        getTree(item.children, id);
+      }
+    });
+  }
+  getTree(tree, key);
+  return element;
+}
+
+/**
+ * 判断对象是否为空
+ * @param {对象} obj
+ */
+export function isEmptyObject(obj) {
+  for (var key in obj) {
+    return false;
+  }
+  return true;
 }

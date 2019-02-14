@@ -105,16 +105,16 @@ export default class BindMenuPage extends Component {
       title: '权限地址',
       dataIndex: 'action',
     },
-    {
-      title: '描述',
-      dataIndex: 'des',
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updTime',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-    },
+    // {
+    //   title: '描述',
+    //   dataIndex: 'des',
+    // },
+    // {
+    //   title: '更新时间',
+    //   dataIndex: 'updTime',
+    //   sorter: true,
+    //   render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    // },
   ];
 
   render() {
@@ -128,7 +128,7 @@ export default class BindMenuPage extends Component {
     };
     return (
       <Modal
-        width="70%"
+        width="80%"
         destroyOnClose
         title="绑定菜单权限"
         visible={visible}

@@ -2,11 +2,8 @@ import styles from './index.css';
 import UserLayout from './UserLayout';
 import BasicLayout from './BasicLayout';
 import router from 'umi/router';
+import SettingPage from '@/pages/account/setting';
 
-/**
- * 过去的路径
- */
-let previousPath = '';
 /**
  * umi
  * @param {*} props
@@ -14,7 +11,7 @@ let previousPath = '';
 export default function IndexLayout(props) {
   const { location } = props;
   const currentPath = location.pathname;
-
+  // FIXME 需要优化以下处理url方式
   /**
    * 登陆
    */
@@ -33,16 +30,20 @@ export default function IndexLayout(props) {
     return <UserLayout>{props.children}</UserLayout>;
   }
   /**
-   * 记录路径
-   */
-  if (previousPath !== currentPath) {
-    previousPath = currentPath;
-  }
-  /**
    * 异常页面
    */
   if (currentPath.startsWith('/exception')) {
     return <div>{props.children}</div>;
+  }
+  /**
+   * 个人设置
+   */
+  if (currentPath.startsWith('/account/setting/')) {
+    return (
+      <BasicLayout>
+        <SettingPage>{props.children}</SettingPage>
+      </BasicLayout>
+    );
   }
   /**
    * 主页

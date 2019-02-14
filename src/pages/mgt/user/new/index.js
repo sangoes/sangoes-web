@@ -39,6 +39,12 @@ export default class NewUserPage extends Component {
       userItem ? onUpdateHandle(fieldsValue) : onOkHandle(fieldsValue);
     });
   }
+  // 随机生产用户名
+  _renderRandomUserName = () => {
+    // 生成随机用户名
+    const random = randomLetterAndNums().slice(2, 18);
+    this.setState({ username: random });
+  };
 
   render() {
     const { form, onOkHandle } = this.props;
@@ -67,6 +73,34 @@ export default class NewUserPage extends Component {
             })(<Input placeholder="主键" disabled style={{ display: 'none' }} />)}
           </FormItem>
         )}
+        {/* 所属部门 */}
+        {/* <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="所属部门">
+          {form.getFieldDecorator('departId', {
+            initialValue: userItem && userItem.departId,
+            rules: [{ required: true, message: '输入1-4位的姓名！', min: 1, max: 4 }],
+          })(<Input placeholder="输入1-4位的姓名" />)}
+        </FormItem> */}
+        {/* 姓名 */}
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="姓名">
+          {form.getFieldDecorator('realName', {
+            initialValue: userItem && userItem.realName,
+            rules: [{ required: true, message: '输入1-4位的姓名！', min: 1, max: 4 }],
+          })(<Input placeholder="输入1-4位的姓名" />)}
+        </FormItem>
+        {/* 手机 */}
+        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="手机">
+          {form.getFieldDecorator('mobile', {
+            initialValue: userItem && userItem.mobile,
+            rules: [
+              { required: true, message: '输入11位的手机号码！' },
+              {
+                pattern: '^((13[0-9])|(15[^4])|(18[0-9])|(17[0-9])|(147))\\d{8}$',
+                message: '不符合手机号码格式',
+              },
+            ],
+          })(<Input placeholder="输入11位的手机号码" />)}
+        </FormItem>
+        {/* 用户名 */}
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="用户名">
           {form.getFieldDecorator(
             'username',
@@ -79,38 +113,9 @@ export default class NewUserPage extends Component {
           )(
             <Input
               placeholder="输入4-16位的用户名,只能英文和数字"
-              addonAfter={
-                <a
-                  onClick={() => {
-                    // 生成随机用户名
-                    const random = randomLetterAndNums().slice(2, 18);
-                    this.setState({ username: random });
-                  }}
-                >
-                  随机
-                </a>
-              }
+              addonAfter={<a onClick={this._renderRandomUserName}>随机</a>}
             />
           )}
-        </FormItem>
-
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="姓名">
-          {form.getFieldDecorator('realName', {
-            initialValue: userItem && userItem.realName,
-            rules: [{ required: true, message: '输入1-4位的姓名！', min: 1, max: 4 }],
-          })(<Input placeholder="输入1-4位的姓名" />)}
-        </FormItem>
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="手机">
-          {form.getFieldDecorator('mobile', {
-            initialValue: userItem && userItem.mobile,
-            rules: [
-              { required: true, message: '输入11位的手机号码！' },
-              {
-                pattern: '^((13[0-9])|(15[^4])|(18[0-9])|(17[0-9])|(147))\\d{8}$',
-                message: '不符合手机号码格式',
-              },
-            ],
-          })(<Input placeholder="输入11位的手机号码" />)}
         </FormItem>
         {/* 默认密码 */}
         <div className={styles.suggestion}>默认密码:888888</div>

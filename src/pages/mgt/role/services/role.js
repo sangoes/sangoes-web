@@ -71,3 +71,11 @@ export async function updateRole(params) {
     body: params,
   });
 }
+
+/**
+ * 获取所有角色
+ * @param {参数} params
+ */
+export async function getAllRoles(params) {
+  return request('/api/admin/role/all');
+}
