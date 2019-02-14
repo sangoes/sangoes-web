@@ -81,3 +81,10 @@ export async function listDict(params) {
   return request(`/api/admin/dict/one/list/${params}`);
 }
 
+/**
+ * 分页获取消息
+ * @param {dictKey} params
+ */
+export async function getMsgNotice(params) {
+  return request(`/api/msg/center/page?${stringify(params)}`);
+}

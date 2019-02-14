@@ -395,3 +395,14 @@ export function getTreeParentId(tree, key) {
   getTree(tree, key);
   return element;
 }
+
+/**
+ * 判断对象是否为空
+ * @param {对象} obj
+ */
+export function isEmptyObject(obj) {
+  for (var key in obj) {
+    return false;
+  }
+  return true;
+}

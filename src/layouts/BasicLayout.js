@@ -9,6 +9,7 @@ import { connect } from 'dva';
 import { createActions, createAction } from '@/utils';
 import BaseMenu from '@/components/BaseMenu';
 import router from 'umi/router';
+import * as action from '@/action/app';
 
 const { Header, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
@@ -16,7 +17,8 @@ const SubMenu = Menu.SubMenu;
 @connect(({ app, routing, loading }) => ({
   ...app,
   ...routing,
-  menuLoading: loading.effects['app/getUserMenu'],
+  menuLoading: loading.effects[action.USER_MENU],
+  noticeLoading: loading.effects[action.MSG_NOTICE],
 }))
 export default class BasicLayout extends React.PureComponent {
   constructor(props) {
@@ -30,13 +32,13 @@ export default class BasicLayout extends React.PureComponent {
   componentDidMount() {
     // 获取侧边栏菜单
     this.props.dispatch(
-      createActions('app/getUserMenu')()(() => {
+      createActions(action.USER_MENU)()(() => {
         const { openKeys, selectedKeys } = this.props;
         this.setState({ openKeys: openKeys, selectedKeys: selectedKeys });
       })
     );
     // 获取当前用户
-    this.props.dispatch(createAction('app/getUserInfo')());
+    this.props.dispatch(createAction(action.USER_INFO)());
   }
 
   componentDidUpdate(preProps) {}
@@ -66,8 +68,34 @@ export default class BasicLayout extends React.PureComponent {
         break;
     }
   };
+  /**
+   * @description 点击通知按钮回调
+   * @memberof BasicLayout
+   */
+  _onNoticeVisibleChange = visible => {
+    if (visible) {
+      this.props.dispatch(createAction(action.MSG_NOTICE)({ type: 1 }));
+      this.props.dispatch(createAction(action.MSG_NOTICE)({ type: 2 }));
+      this.props.dispatch(createAction(action.MSG_NOTICE)({ type: 3 }));
+    }
+  };
+  /**
+   * @description 渲染
+   * @author jerrychir
+   * @returns
+   * @memberof BasicLayout
+   */
   render() {
-    const { menuTree, userInfo, location, menuLoading } = this.props;
+    const {
+      menuTree,
+      userInfo,
+      location,
+      menuLoading,
+      noticeLoading,
+      msgData,
+      notifData,
+      agendaData,
+    } = this.props;
     const { openKeys, selectedKeys } = this.state;
     return (
       <Layout style={{ minHeight: '100vh' }}>
@@ -96,6 +124,11 @@ export default class BasicLayout extends React.PureComponent {
             <GlobalHeader
               currentUser={userInfo}
               onMenuClick={this._handleMenuClick}
+              onNoticeVisibleChange={this._onNoticeVisibleChange}
+              fetchingNotices={noticeLoading}
+              msgData={msgData}
+              notifData={notifData}
+              agendaData={agendaData}
               {...this.props}
             />
           </Header>

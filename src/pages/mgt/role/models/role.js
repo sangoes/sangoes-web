@@ -11,6 +11,7 @@ import {
   deleteRole,
   batchDeleteRole,
   updateRole,
+  getAllRoles,
 } from '../services/role';
 import { getKeys } from '@/utils/utils';
 
@@ -25,6 +26,7 @@ export default {
     expandedKeys: [],
     authKeys: [],
     auths: [],
+    roles: [],
   },
 
   effects: {
@@ -121,6 +123,13 @@ export default {
         yield put(createAction('getRolePage')());
         // 更新成功
         message.success(response.msg);
+      }
+    },
+    // 获取所有角色
+    *getAllRoles({ payload, callback }, { call, put }) {
+      const response = yield call(getAllRoles, payload);
+      if (net(response)) {
+        yield put(createAction('updateState')({ roles: response.data }));
       }
     },
   },
