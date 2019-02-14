@@ -22,6 +22,12 @@ export default {
     treeDict: [],
     // 字典列表(根据dictKey查询)
     listDict: [],
+    // 消息
+    msgData: {},
+    // 通知
+    notifData: {},
+    // 待办
+    agendaData: {},
   },
 
   effects: {
@@ -113,9 +119,24 @@ export default {
     *getMsgNotice({ payload, callback }, { call, put }) {
       const response = yield call(services.getMsgNotice, payload);
       if (net(response)) {
-        // yield put(createAction('updateState')({ listDict: response.data }));
-        console.log(response);
+        const { type } = payload;
+        switch (type) {
+          // 消息
+          case 1:
+            yield put(createAction('updateState')({ msgData: response.data }));
+            break;
+          // 通知
+          case 2:
+            yield put(createAction('updateState')({ notifData: response.data }));
+            break;
+          // 待办
+          case 3:
+            yield put(createAction('updateState')({ agendaData: response.data }));
+            break;
 
+          default:
+            break;
+        }
         // 成功返回
         callback && callback();
       }

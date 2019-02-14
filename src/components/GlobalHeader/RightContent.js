@@ -5,8 +5,41 @@ import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import styles from './index.less';
 import { NoticeIcon, HeaderSearch, HeaderDropdown } from 'ant-design-pro';
+import * as Utils from '@/utils/utils';
 
 export default class GlobalHeaderRight extends PureComponent {
+  /**
+   * @description 获取noticeData
+   * @memberof GlobalHeaderRight
+   */
+  _getNoticeData = data => {
+    if (
+      Utils.isEmptyObject(data) ||
+      Utils.isEmptyObject(data.page) ||
+      data.page.list.length === 0
+    ) {
+      return [];
+    }
+    const noticeData = data.page.list;
+    const newNotices = noticeData.map(notice => {
+      const newNotice = {};
+      // 标题
+      newNotice.title = notice.title;
+      // 内容
+      newNotice.description = notice.content;
+      // avatar
+      newNotice.avatar = notice.icon;
+      // datetime
+      newNotice.datetime = moment(notice.crtTime).fromNow();
+      // read
+      if (notice.readed) {
+        newNotice.read = notice.readed === 0 ? false : true;
+      }
+      return newNotice;
+    });
+    return newNotices;
+  };
+
   getNoticeData() {
     const { notices = [] } = this.props;
     if (notices.length === 0) {
@@ -84,6 +117,9 @@ export default class GlobalHeaderRight extends PureComponent {
       onMenuClick,
       onNoticeClear,
       skeletonCount,
+      msgData,
+      notifData,
+      agendaData,
       onNoticeTabChange,
       theme,
     } = this.props;
@@ -115,6 +151,12 @@ export default class GlobalHeaderRight extends PureComponent {
     };
     const noticeData = this.getNoticeData();
     const unreadMsg = this.getUnreadData(noticeData);
+    const msgList = this._getNoticeData(msgData);
+    const notifList = this._getNoticeData(notifData);
+    const agendaList = this._getNoticeData(agendaData);
+    console.log(msgList);
+
+    // 样式
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;
@@ -167,8 +209,8 @@ export default class GlobalHeaderRight extends PureComponent {
           onTabChange={onNoticeTabChange}
         >
           <NoticeIcon.Tab
-            count={unreadMsg.notification}
-            list={noticeData.notification}
+            count={notifData.unreadCount}
+            list={notifList}
             title={formatMessage({ id: 'component.globalHeader.notification' })}
             name="notification"
             emptyText={formatMessage({ id: 'component.globalHeader.notification.empty' })}
@@ -176,8 +218,8 @@ export default class GlobalHeaderRight extends PureComponent {
             {...loadMoreProps}
           />
           <NoticeIcon.Tab
-            count={unreadMsg.message}
-            list={noticeData.message}
+            count={msgData.unreadCount}
+            list={msgList}
             title={formatMessage({ id: 'component.globalHeader.message' })}
             name="message"
             emptyText={formatMessage({ id: 'component.globalHeader.message.empty' })}
@@ -185,8 +227,8 @@ export default class GlobalHeaderRight extends PureComponent {
             {...loadMoreProps}
           />
           <NoticeIcon.Tab
-            count={unreadMsg.event}
-            list={noticeData.event}
+            count={agendaData.unreadCount}
+            list={agendaList}
             title={formatMessage({ id: 'component.globalHeader.event' })}
             name="event"
             emptyText={formatMessage({ id: 'component.globalHeader.event.empty' })}
