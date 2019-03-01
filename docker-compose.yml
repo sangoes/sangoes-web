@@ -1,0 +1,9 @@
+version: "3.5"
+
+services:
+  sangoes-web:
+    build: ./
+    container_name: "sangoes-web"
+    restart: unless-stopped
+    ports:
+      - 8282:80

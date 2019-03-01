@@ -4,7 +4,7 @@ import { formatMessage, FormattedMessage } from 'umi/locale';
 import Link from 'umi/link';
 import { Checkbox, Alert, Icon } from 'antd';
 import Login from '@/components/Login';
-import styles from './Login.less';
+import styles from './login.less';
 import JSEncrypt from 'jsencrypt';
 import { createAction } from '@/utils';
 import { randomLetterAndNums } from '@/utils/utils';
