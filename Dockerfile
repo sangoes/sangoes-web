@@ -2,6 +2,8 @@ FROM nginx:1.15.5
 
 MAINTAINER jerrychir <jerrychir@163.com>
 
+USER root
+
 WORKDIR /usr/src/app/
 
 
