@@ -6,8 +6,7 @@ USER root
 
 WORKDIR /usr/src/app/
 
-
-COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY ./dist  /usr/share/nginx/html/
 

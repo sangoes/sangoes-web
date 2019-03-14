@@ -78,3 +78,14 @@
 [antd](https://github.com/ant-design/ant-design)
 
 [braft-editor](https://github.com/margox/braft-editor)
+
+## 问题或建议
+
+加微信:
+
+## 捐赠
+
+
+您的支持是作者写作最大的动力，请喝杯咖啡吧。(虽然我对咖啡过敏)
+![WX20190313-224237@2x](https://user-images.githubusercontent.com/3461906/54287852-6b336800-45e1-11e9-94c8-2732f3a1fab7.png)
+ 

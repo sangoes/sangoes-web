@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
   sangoes-web:
-    image: <ip>:<端口>/sangoes-web:latest
+    image: <ip>:5000/sangoes-web:latest
     container_name: sangoes-web
     restart: always
     ports:
