@@ -79,6 +79,10 @@
 
 [braft-editor](https://github.com/margox/braft-editor)
 
+## 问题或建议
+
+加微信:
+
 ## 捐赠
 
 
