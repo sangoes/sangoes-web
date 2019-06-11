@@ -54,6 +54,8 @@ export default {
     *logout({ payload }, { call, put }) {
       const response = yield call(services.logout, payload);
       if (net(response)) {
+        // 注销成功
+        message.success(response.msg);
         // 清空session
         sessionStorage.removeItem('access_token');
         // 重定向login
