@@ -141,6 +141,16 @@ export default {
         callback && callback();
       }
     },
+    // 修改密码
+    *changePwd({ payload, callback }, { call, put }) {
+      const response = yield call(services.changePwd, payload);
+      if (net(response)) {
+        // 添加成功
+        message.success(response.msg);
+        // 成功返回
+        callback && callback();
+      }
+    },
   },
 
   reducers: {

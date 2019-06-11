@@ -88,3 +88,11 @@ export async function listDict(params) {
 export async function getMsgNotice(params) {
   return request(`/api/msg/center/page?${stringify(params)}`);
 }
+
+/**
+ * 修改密码
+ * @param  params
+ */
+export async function changePwd(params) {
+  return request('/api/admin/user/change/pwd', { method: 'POST', body: params });
+}

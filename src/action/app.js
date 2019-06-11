@@ -12,3 +12,8 @@ export const USER_INFO = 'app/getUserInfo';
  * 获取当前用户对应的菜单
  */
 export const USER_MENU = 'app/getUserMenu';
+
+/**
+ * 修改密码
+ */
+export const CHANGE_PWD = 'app/changePwd';

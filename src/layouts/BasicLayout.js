@@ -10,6 +10,7 @@ import { createActions, createAction } from '@/utils';
 import BaseMenu from '@/components/BaseMenu';
 import router from 'umi/router';
 import * as action from '@/action/app';
+import ChangePwd from '@/pages/account/pwd';
 
 const { Header, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
@@ -23,7 +24,13 @@ const SubMenu = Menu.SubMenu;
 export default class BasicLayout extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = { collapsed: false, openKeys: [], selectedKeys: [] };
+    this.state = {
+      collapsed: false,
+      openKeys: [],
+      selectedKeys: [],
+      // 修改密码
+      pwdVisible: false,
+    };
   }
   toggle = () => {
     this.setState({ collapsed: !this.state.collapsed });
@@ -60,6 +67,10 @@ export default class BasicLayout extends React.PureComponent {
       case 'userSetting':
         router.push('/account/setting');
         break;
+      // 修改密码
+      case 'changePwd':
+        this.setState({ pwdVisible: true });
+        break;
       case 'logout':
         // 退出登录
         this.props.dispatch(createAction('app/logout')());
@@ -79,6 +90,25 @@ export default class BasicLayout extends React.PureComponent {
       this.props.dispatch(createAction(action.MSG_NOTICE)({ type: 3 }));
     }
   };
+
+  /**
+   * @description 修改密码关闭
+   * @memberof BasicLayout
+   */
+  _onPwdCancel = () => {
+    this.setState({ pwdVisible: false });
+  };
+  /**
+   * @description 更新密码
+   * @memberof BasicLayout
+   */
+  _onUpdatePwdHandle = fields => {
+    this.props.dispatch(
+      createActions(action.CHANGE_PWD)({ ...fields })(() => {
+        this._onPwdCancel();
+      })
+    );
+  };
   /**
    * @description 渲染
    * @author jerrychir
@@ -96,7 +126,7 @@ export default class BasicLayout extends React.PureComponent {
       notifData,
       agendaData,
     } = this.props;
-    const { openKeys, selectedKeys } = this.state;
+    const { openKeys, selectedKeys, pwdVisible } = this.state;
     return (
       <Layout style={{ minHeight: '100vh' }}>
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
@@ -136,6 +166,14 @@ export default class BasicLayout extends React.PureComponent {
           <Content>{this.props.children}</Content>
           {/* 尾部 */}
           <Footer />
+          {/* 修改密码 */}
+          {pwdVisible && (
+            <ChangePwd
+              visible={pwdVisible}
+              onCancel={this._onPwdCancel}
+              onOkHandle={this._onUpdatePwdHandle}
+            />
+          )}
         </Layout>
       </Layout>
     );

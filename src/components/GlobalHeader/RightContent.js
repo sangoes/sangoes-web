@@ -133,6 +133,11 @@ export default class GlobalHeaderRight extends PureComponent {
           <Icon type="setting" />
           <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
         </Menu.Item>
+        {/* 修改密码 */}
+        <Menu.Item key="changePwd">
+          <Icon type="lock" />
+          <FormattedMessage id="menu.account.pwd" defaultMessage="change password" />
+        </Menu.Item>
         <Menu.Item key="triggerError">
           <Icon type="close-circle" />
           <FormattedMessage id="menu.account.trigger" defaultMessage="Trigger Error" />
