@@ -5,6 +5,7 @@ import authUtils from '@/utils/authUtils';
 
 @connect(({ msg }) => ({ ...msg }))
 export default class IndexPage extends Component {
+  onError(e) {}
   render() {
     const { wsMsg } = this.props;
     const dd = authUtils.auth('admin:user:addddd');

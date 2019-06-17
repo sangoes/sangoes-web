@@ -4,7 +4,7 @@ import StandardTable from '@/components/StandardTable';
 import moment from 'moment';
 import { createActions, createAction } from '@/utils';
 import { connect } from 'dva';
-import { Modal, Button, Form, Divider, Dropdown, Menu, Icon } from 'antd';
+import { Modal, Button, Form, Divider } from 'antd';
 import BaseLayout from '@/components/BaseLayout';
 import NewDictPage from './new';
 import CheckDictPage from './check';
@@ -60,7 +60,7 @@ export default class DictMgtPage extends Component {
         form.resetFields();
         // 关闭弹窗
         this._onNewDictCancel();
-      })
+      }),
     );
   };
   // 查看字典确认
@@ -146,7 +146,7 @@ export default class DictMgtPage extends Component {
     dispatch(
       createActions('dict/batchDeleteDict')({ dictIds: keys })(() => {
         this.setState({ selectedRows: [] });
-      })
+      }),
     );
   };
 
